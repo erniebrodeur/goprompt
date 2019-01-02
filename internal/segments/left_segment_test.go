@@ -8,13 +8,13 @@ import (
 var _ = Describe("LeftSegment", func() {
 	Describe("Output()", func() {
 		It("is expected to be:┤ ", func() {
-			Expect(leftSegment{}.output()).To(Equal("┤ "))
+			Expect(leftSegment{}.Output()).To(Equal("┤ "))
 		})
 	})
 
 	Describe("Len()", func() {
 		It("is expected to be 2", func() {
-			Expect(leftSegment{}.len()).To(Equal(2))
+			Expect(leftSegment{}.Len()).To(Equal(2))
 		})
 	})
 })

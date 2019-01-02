@@ -11,7 +11,7 @@ import (
 
 var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>\w*)...(?P<remote_branch>\S*)(..(?P<direction>ahead|behind) (?P<direction_count>\d)]|)`)
 
-type gitSegment struct {
+type Git struct {
 	branch       string
 	remoteBranch string
 	direction    string
@@ -19,8 +19,8 @@ type gitSegment struct {
 	dirty        bool
 }
 
-func (s gitSegment) output() string {
-	s = gitSegment.parse(s)
+func (s Git) Output() string {
+	s = Git.parse(s)
 	output := fmt.Sprintf(":%s", s.branch)
 
 	if s.dirty {
@@ -38,11 +38,11 @@ func (s gitSegment) output() string {
 	return output
 }
 
-func (s gitSegment) len() int {
-	return len(gitSegment.output(s))
+func (s Git) Len() int {
+	return len(Git.Output(s))
 }
 
-func (s gitSegment) parse() gitSegment {
+func (s Git) parse() Git {
 	out, err := exec.Command("git", "status", "--porcelain", "--ahead-behind", "-b").Output()
 
 	if err != nil {

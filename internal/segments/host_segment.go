@@ -7,7 +7,7 @@ import (
 
 type Host struct{}
 
-func (s Host) output() string {
+func (s Host) Output() string {
 	_, sshExists := os.LookupEnv("SSH_CLIENT")
 	hostnameValue, _ := os.Hostname()
 
@@ -18,6 +18,6 @@ func (s Host) output() string {
 	return ""
 }
 
-func (s Host) len() int {
-	return len(Host.output(s))
+func (s Host) Len() int {
+	return len(Host.Output(s))
 }

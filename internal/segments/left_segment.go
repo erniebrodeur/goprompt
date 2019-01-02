@@ -4,10 +4,10 @@ package segments
 
 type Left struct{}
 
-func (s Left) output() string {
+func (s Left) Output() string {
 	return "┤ "
 }
 
-func (s Left) len() int {
+func (s Left) Len() int {
 	return 2
 }

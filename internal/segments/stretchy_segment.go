@@ -7,14 +7,14 @@ import "strings"
 var TerminalWidth = 200
 
 type Stretchy struct {
-	lengthLeft, lengthRight int
+	LengthLeft, LengthRight int
 }
 
-func (s Stretchy) output() string {
+func (s Stretchy) Output() string {
 	// the meta chars I'm using have a len of 3.  We have five chars, so we do 5*3-3 (since they already have len 1)
-	return strings.Repeat("─", TerminalWidth-s.lengthLeft-s.lengthRight)
+	return strings.Repeat("─", TerminalWidth-s.LengthLeft-s.LengthRight)
 }
 
-func (s Stretchy) len() int {
+func (s Stretchy) Len() int {
 	return 1
 }

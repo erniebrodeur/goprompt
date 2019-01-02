@@ -6,12 +6,12 @@ import (
 
 type Login struct{}
 
-func (s Login) output() string {
+func (s Login) Output() string {
 	val, _ := os.LookupEnv("USER")
 
 	return val
 }
 
-func (s Login) len() int {
-	return len(Login.output(s))
+func (s Login) Len() int {
+	return len(Login.Output(s))
 }

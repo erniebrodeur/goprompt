@@ -5,16 +5,16 @@ import (
 	"os"
 )
 
-type shellLevelSegment struct{}
+type ShellLevel struct{}
 
-func (s shellLevelSegment) output() string {
+func (s ShellLevel) Output() string {
 	if os.Getenv("USER") == "root" {
 		return "#"
 	}
-	fmt.Println(s.len())
+	fmt.Println(s.Len())
 	return "%"
 }
 
-func (s shellLevelSegment) len() int {
+func (s ShellLevel) Len() int {
 	return 1
 }

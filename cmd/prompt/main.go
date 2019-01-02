@@ -20,16 +20,16 @@ type PromptData struct{}
 
 func (p PromptData) Output() string {
 	login := segments.Login{}
-	host := segments.host{}
+	host := segments.Host{}
 	stretchy := segments.Stretchy{}
 
-	leftHalf := fmt.Sprintf("%v%v%v%v", segments.Left{}.output(), segments.Pwd{}.output(), segments.Git{}.output(), segments.Right{}.output())
-	rightHalf := fmt.Sprintf("%v%v%v%v", segments.Left{}.output(), login.output(), host.output(), segments.Right{}.output())
+	leftHalf := fmt.Sprintf("%v%v%v%v", segments.Left{}.Output(), segments.Pwd{}.Output(), segments.Git{}.Output(), segments.Right{}.Output())
+	rightHalf := fmt.Sprintf("%v%v%v%v", segments.Left{}.Output(), login.Output(), host.Output(), segments.Right{}.Output())
 
-	stretchy.lengthLeft = len(leftHalf)
-	stretchy.lengthRight = len(rightHalf)
+	stretchy.LengthLeft = len(leftHalf)
+	stretchy.LengthRight = len(rightHalf)
 
-	mid := "fmt.Sprintf(\"%s\", stretchy.output())"
+	mid := "fmt.Sprintf(\"%s\", stretchy.Output())"
 
 	return fmt.Sprint(leftHalf + mid + rightHalf + "\n%% ")
 }
