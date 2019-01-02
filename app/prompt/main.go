@@ -1,4 +1,4 @@
-package main
+package main // github.com/erniebrodeur/prompt
 
 import (
 	"fmt"
@@ -6,14 +6,17 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// Goprompt comment
-type Goprompt interface {
-	TerminalWidth() int
+// TerminalWidth comment
+var TerminalWidth = 0
+
+// Prompt comment
+type Prompt interface {
+	Output()
 }
 
-type goPrompt struct{}
+type PromptData struct{}
 
-func main() {
+func (p PromptData) Output() string {
 	login := loginSegment{}
 	host := hostSegment{}
 	stretchy := stretchySegment{}
@@ -24,15 +27,20 @@ func main() {
 	stretchy.lengthLeft = len(leftHalf)
 	stretchy.lengthRight = len(rightHalf)
 
-	mid := fmt.Sprintf("%s", stretchy.output())
+	mid := "fmt.Sprintf(\"%s\", stretchy.output())"
 
-	fmt.Print(leftHalf + mid + rightHalf + "\n%% ")
+	return fmt.Sprint(leftHalf + mid + rightHalf + "\n%% ")
 }
 
-func (gp goPrompt) TerminalWidth() int {
+func initialize() {
 	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
 	if err != nil {
-		return 80 // this isn't right, but if term fails, always return 80.   even though we don't have a term (say for testing)
+		TerminalWidth = 80 // this isn't right, but if term fails, always return 80.   even though we don't have a term (say for testing)
 	}
-	return int(ws.Col)
+
+	TerminalWidth = int(ws.Col)
+}
+
+func main() {
+	fmt.Print(PromptData{}.Output())
 }

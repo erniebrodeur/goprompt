@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestGoPrompt(t *testing.T) {
+func TestPrompt(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "GoPrompt Suite")
+	RunSpecs(t, "Prompt Suite")
 }
