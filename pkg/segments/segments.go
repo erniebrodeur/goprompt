@@ -1,7 +1,7 @@
-package main
+package segments // import "github.com/erniebrodeur/prompt/internal/segments"
 
-type segment interface {
-	output() string
-	len() int
-	coloredOutput() string
+type Segment interface {
+	Output() string
+	Len() int
+	ColoredOutput() string
 }

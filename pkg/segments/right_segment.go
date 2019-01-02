@@ -1,13 +1,13 @@
 // UTF-8
 
-package main
+package segments
 
-type rightSegment struct{}
+type Right struct{}
 
-func (s rightSegment) output() string {
+func (s Right) output() string {
 	return " ├"
 }
 
-func (s rightSegment) len() int {
+func (s Right) len() int {
 	return 2
 }

@@ -1,17 +1,17 @@
-package main
+package segments
 
 import (
 	"os"
 )
 
-type loginSegment struct{}
+type Login struct{}
 
-func (s loginSegment) output() string {
+func (s Login) output() string {
 	val, _ := os.LookupEnv("USER")
 
 	return val
 }
 
-func (s loginSegment) len() int {
-	return len(loginSegment.output(s))
+func (s Login) len() int {
+	return len(Login.output(s))
 }

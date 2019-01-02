@@ -1,7 +1,9 @@
-package main // github.com/erniebrodeur/prompt
+package main // import "github.com/erniebrodeur/prompt"
 
 import (
 	"fmt"
+
+	"github.com/erniebrodeur/prompt/internal/segments"
 
 	"golang.org/x/sys/unix"
 )
@@ -17,12 +19,12 @@ type Prompt interface {
 type PromptData struct{}
 
 func (p PromptData) Output() string {
-	login := loginSegment{}
-	host := hostSegment{}
-	stretchy := stretchySegment{}
+	login := segments.Login{}
+	host := segments.host{}
+	stretchy := segments.Stretchy{}
 
-	leftHalf := fmt.Sprintf("%v%v%v%v", leftSegment{}.output(), pwdSegment{}.output(), gitSegment{}.output(), rightSegment{}.output())
-	rightHalf := fmt.Sprintf("%v%v%v%v", leftSegment{}.output(), login.output(), host.output(), rightSegment{}.output())
+	leftHalf := fmt.Sprintf("%v%v%v%v", segments.Left{}.output(), segments.Pwd{}.output(), segments.Git{}.output(), segments.Right{}.output())
+	rightHalf := fmt.Sprintf("%v%v%v%v", segments.Left{}.output(), login.output(), host.output(), segments.Right{}.output())
 
 	stretchy.lengthLeft = len(leftHalf)
 	stretchy.lengthRight = len(rightHalf)

@@ -1,13 +1,13 @@
 // UTF-8
 
-package main
+package segments
 
-type leftSegment struct{}
+type Left struct{}
 
-func (s leftSegment) output() string {
+func (s Left) output() string {
 	return "┤ "
 }
 
-func (s leftSegment) len() int {
+func (s Left) len() int {
 	return 2
 }

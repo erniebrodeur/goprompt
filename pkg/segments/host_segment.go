@@ -1,13 +1,13 @@
-package main
+package segments
 
 import (
 	"fmt"
 	"os"
 )
 
-type hostSegment struct{}
+type Host struct{}
 
-func (s hostSegment) output() string {
+func (s Host) output() string {
 	_, sshExists := os.LookupEnv("SSH_CLIENT")
 	hostnameValue, _ := os.Hostname()
 
@@ -18,6 +18,6 @@ func (s hostSegment) output() string {
 	return ""
 }
 
-func (s hostSegment) len() int {
-	return len(hostSegment.output(s))
+func (s Host) len() int {
+	return len(Host.output(s))
 }
