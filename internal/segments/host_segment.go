@@ -17,10 +17,10 @@ func (h Host) Len() int {
 }
 
 func (h Host) Output() string {
-	_, sshExists := os.LookupEnv("SSH_CLIENT")
-	hostnameValue, _ := os.Hostname()
+	sshClient := os.Getenv("SSH_CLIENT")
 
-	if sshExists {
+	if sshClient != "" {
+		hostnameValue, _ := os.Hostname()
 		return fmt.Sprintf("@%v", hostnameValue)
 	}
 

@@ -7,14 +7,16 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-var git = segments.Git{}
-var host = segments.Host{}
-var left = segments.Bookend{Left: true}
-var login = segments.Login{}
-var mid = segments.Mid{}
-var pwd = segments.Pwd{}
-var right = segments.Bookend{}
-var shell = segments.ShellLevel{}
+var (
+	git   = segments.Git{}
+	host  = segments.Host{}
+	left  = segments.Bookend{Left: true}
+	login = segments.Login{}
+	mid   = segments.Mid{}
+	pwd   = segments.Pwd{}
+	right = segments.Bookend{}
+	shell = segments.ShellLevel{}
+)
 
 func main() {
 	var terminalWidth = 40

@@ -14,7 +14,7 @@ func (m Mid) ColoredOutput() string {
 
 // Len return length of string without invisible characters counted
 func (m Mid) Len() int {
-	return len(m.Output())
+	return m.Count
 }
 
 func (m Mid) Output() string {

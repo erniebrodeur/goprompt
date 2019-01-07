@@ -1,54 +1,50 @@
 package segments
 
-import "testing"
+import (
+	"fmt"
+	"os"
 
-func TestHost_ColoredOutput(t *testing.T) {
-	tests := []struct {
-		name string
-		h    Host
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.h.ColoredOutput(); got != tt.want {
-				t.Errorf("Host.ColoredOutput() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
 
-func TestHost_Len(t *testing.T) {
-	tests := []struct {
-		name string
-		h    Host
-		want int
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.h.Len(); got != tt.want {
-				t.Errorf("Host.Len() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+var _ = Describe("Host{}", func() {
+	host := Host{}
 
-func TestHost_Output(t *testing.T) {
-	tests := []struct {
-		name string
-		h    Host
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.h.Output(); got != tt.want {
-				t.Errorf("Host.Output() = %v, want %v", got, tt.want)
-			}
+	Describe("Output()", func() {
+		It("is expected to be blank", func() {
+			Expect(host.Output()).To(BeEmpty())
 		})
-	}
-}
+	})
+
+	Describe("Len()", func() {
+		It("is expected to be 0", func() {
+			Expect(host.Len()).To(Equal(0))
+		})
+	})
+
+	Context("When environmental var SSH_CLIENT is set", func() {
+		originalClient := os.Getenv("SSH_CLIENT")
+		hostname, _ := os.Hostname()
+		wantedHostname := fmt.Sprintf("@%s", hostname)
+
+		Describe("Output()", func() {
+			It(fmt.Sprintf("is expected to be: @%s", hostname), func() {
+				os.Setenv("SSH_CLIENT", "192.168.1.1")
+				Expect(host.Output()).To(Equal(wantedHostname))
+			})
+		})
+
+		Describe("Len()", func() {
+			It(fmt.Sprintf("is expected to be: %v", len(wantedHostname)), func() {
+				Expect(host.Len()).To(Equal(len(wantedHostname)))
+			})
+		})
+
+		if originalClient != "" {
+			os.Setenv("SSH_CLIENT", originalClient)
+		} else {
+			os.Unsetenv("SSH_CLIENT")
+		}
+	})
+})
