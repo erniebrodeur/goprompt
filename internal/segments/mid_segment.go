@@ -1,7 +1,11 @@
 package segments
 
+import (
+	"strings"
+)
+
 type Mid struct {
-	Left bool
+	Count int
 }
 
 func (m Mid) ColoredOutput() string {
@@ -14,5 +18,9 @@ func (m Mid) Len() int {
 }
 
 func (m Mid) Output() string {
-	return "─"
+	if m.Count <= 0 {
+		return ""
+	}
+
+	return strings.Repeat("─", m.Count)
 }

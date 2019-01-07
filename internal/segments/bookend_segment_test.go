@@ -6,8 +6,8 @@ import (
 )
 
 var _ = Describe("Bookend", func() {
-	Describe("Output()", func() {
-		It("is expected to be: ┤", func() {
+	Describe("Output() is expected to be: ", func() {
+		It("┤", func() {
 			Expect(Bookend{Left: true}.Output()).To(Equal("┤"))
 		})
 	})
