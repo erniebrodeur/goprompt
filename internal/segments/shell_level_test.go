@@ -1,39 +1,35 @@
 package segments
 
-import "testing"
+import (
+	"os"
 
-func TestShellLevel_Output(t *testing.T) {
-	tests := []struct {
-		name string
-		s    ShellLevel
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := ShellLevel{}
-			if got := s.Output(); got != tt.want {
-				t.Errorf("ShellLevel.Output() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
 
-func TestShellLevel_Len(t *testing.T) {
-	tests := []struct {
-		name string
-		s    ShellLevel
-		want int
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := ShellLevel{}
-			if got := s.Len(); got != tt.want {
-				t.Errorf("ShellLevel.Len() = %v, want %v", got, tt.want)
-			}
+var _ = Describe("ShellLevel{}", func() {
+	Describe("Output()", func() {
+		It("is expected to be %", func() {
+			Expect(ShellLevel{}.Output()).To(Equal("%"))
 		})
-	}
-}
+	})
+
+	Describe("Len()", func() {
+		It("is expected to be the length of 1", func() {
+			Expect(ShellLevel{}.Len()).To(Equal(1))
+		})
+	})
+
+	Context("When the user is root", func() {
+		username := os.Getenv("USER")
+
+		Describe("Output()", func() {
+			It("is expected to be #", func() {
+				os.Setenv("USER", "root")
+				Expect(ShellLevel{}.Output()).To(Equal("#"))
+				os.Setenv("USER", username)
+			})
+		})
+
+	})
+})
