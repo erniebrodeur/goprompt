@@ -1,3 +1,4 @@
 prompt
 vendor/
 vendor/
+*.coverprofile

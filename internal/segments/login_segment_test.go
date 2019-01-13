@@ -1,54 +1,25 @@
 package segments
 
-import "testing"
+import (
+	"os"
 
-func TestLogin_ColoredOutput(t *testing.T) {
-	tests := []struct {
-		name string
-		l    Login
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.l.ColoredOutput(); got != tt.want {
-				t.Errorf("Login.ColoredOutput() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
 
-func TestLogin_Len(t *testing.T) {
-	tests := []struct {
-		name string
-		l    Login
-		want int
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.l.Len(); got != tt.want {
-				t.Errorf("Login.Len() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+var _ = Describe("Login{}", func() {
+	login := Login{}
+	user := os.Getenv("USER")
 
-func TestLogin_Output(t *testing.T) {
-	tests := []struct {
-		name string
-		l    Login
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.l.Output(); got != tt.want {
-				t.Errorf("Login.Output() = %v, want %v", got, tt.want)
-			}
+	Describe("Output()", func() {
+		It("is expected to be the logged in user", func() {
+			Expect(login.Output()).To(Equal(user))
 		})
-	}
-}
+	})
+
+	Describe("Len()", func() {
+		It("is expected to be the length of user", func() {
+			Expect(login.Len()).To(Equal(len(user)))
+		})
+	})
+})
