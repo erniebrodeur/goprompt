@@ -1,54 +1,65 @@
 package segments
 
-import "testing"
+import (
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
 
-func TestGit_ColoredOutput(t *testing.T) {
-	tests := []struct {
-		name string
-		g    Git
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.g.ColoredOutput(); got != tt.want {
-				t.Errorf("Git.ColoredOutput() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// type Git struct {
+// 	branch, remoteBranch, direction, dirty string
+// }
 
-func TestGit_Len(t *testing.T) {
-	tests := []struct {
-		name string
-		g    Git
-		want int
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.g.Len(); got != tt.want {
-				t.Errorf("Git.Len() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+var _ = Describe("Git{}", func() {
+	Context("When the current directory is inside of a git tree", func() {
+		Context("and the local repo is ahead of the remote repo", func() {
+			Describe("git{}.direction", func() {
+				git := Git{}
 
-func TestGit_Output(t *testing.T) {
-	tests := []struct {
-		name string
-		g    Git
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.g.Output(); got != tt.want {
-				t.Errorf("Git.Output() = %v, want %v", got, tt.want)
-			}
+				PIt("is expected to include (push)", func() {
+					Expect(git.direction).To(ContainSubstring("(push)"))
+				})
+			})
 		})
-	}
-}
+
+		Context("and the local repo is behind of the remote repo", func() {
+			Describe("git{}.direction", func() {
+				git := Git{}
+
+				PIt("is expected to include (pull)", func() {
+					Expect(git.direction).To(ContainSubstring("(pull)"))
+				})
+			})
+		})
+
+		Describe("git{}.direction", func() {
+			PIt("it is expected to be blank")
+		})
+
+		Describe("git{}.branch", func() {
+			PIt("is expected to be the current branch", func() {})
+		})
+
+		Describe("git{}.remoteBranch", func() {
+			PIt("is expected to be the current branch", func() {})
+		})
+
+		Describe("git{}.dirty", func() {
+			PIt("is expected to be a *")
+		})
+
+		Describe(".Output()", func() {
+			git := Git{}
+
+			It("is expected to include ...", func() {
+				Expect(git.Output()).To(BeEmpty())
+			})
+		})
+
+		Describe(".parse()", func() {
+			PIt("is expected to set git{}.branch", func() {})
+			PIt("is expected to set git{}.remoteBranch", func() {})
+			PIt("is expected to set git{}.direction", func() {})
+			PIt("is expected to set git{}.dirty", func() {})
+		})
+	})
+})
