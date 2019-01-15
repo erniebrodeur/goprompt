@@ -1,11 +1,13 @@
 package segments
 
 import (
+	"bufio"
 	"regexp"
+	"strings"
 )
 
 type Git struct {
-	branch, remoteBranch, direction, dirty string
+	branch, remoteBranch, direction, dirty, gitString string
 }
 
 // type Git struct {
@@ -52,31 +54,37 @@ func (g Git) directionOutput() string {
 
 	return ""
 }
+func (g Git) getGitString() {
 
-func (g Git) parse() Git {
+}
+
+func (g *Git) parse() Git {
 	// out, err := exec.Command("git", "status", "--porcelain", "--ahead-behind", "-b").Output()
 
 	// if err != nil {
 	// 	return g
 	// }
 
-	// lines := strings.Split(string(out), "\n")
+	if g.gitString == "" {
+		// g.getGitOutput()
+	}
 
-	// g.dirty = false
-	// gitHeaderRegexp.MatchString(lines[0])
+	lines := strings.Split(string(g.gitString), "\n")
 
-	// parts := gitHeaderRegexp.FindAllSubmatch([]byte(lines[0]), -1)
-	// g.branch = string(parts[0][1])
-	// g.remoteBranch = string(parts[0][2])
-	// g.direction = string(parts[0][4])
-	// g.directionBy, _ = strconv.Atoi(string(parts[0][5]))
+	gitHeaderRegexp.MatchString(lines[0])
 
-	// if len(lines) > 2 {
-	// 	g.dirty = true
-	// }
+	parts := gitHeaderRegexp.FindAllStringSubmatch(lines[0], -1)
+	g.branch = parts[0][1]
+	g.remoteBranch = parts[0][2]
+	// g.direction = parts[0][4]
+	// g.directionBy, _ = strconv.Atoi(parts[0][5])
 
-	// scanner := bufio.NewScanner(strings.NewReader(string(out)))
-	// scanner.Split(bufio.ScanLines)
+	if len(lines) > 2 {
+		g.dirty = "*"
+	}
 
-	return g
+	scanner := bufio.NewScanner(strings.NewReader(string(g.gitString)))
+	scanner.Split(bufio.ScanLines)
+
+	return *g
 }
