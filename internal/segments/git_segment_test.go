@@ -11,10 +11,10 @@ import (
 
 var _ = Describe("Git{}", func() {
 	Context("When the current directory is inside of a git tree", func() {
-		git := Git{gitString: "## master...origin/master [ahead 1]\n				M internal/segments/git_segment.go\n				M internal/segments/git_segment_test.go"}
+		git := Git{parsed: true, gitString: "## master...origin/master [ahead 1]\n				M internal/segments/git_segment.go\n				M internal/segments/git_segment_test.go"}
 
 		JustBeforeEach(func() {
-			git.parse()
+			git.parseGit()
 		})
 
 		PDescribe(".Output()", func() {
@@ -41,7 +41,7 @@ var _ = Describe("Git{}", func() {
 			})
 		})
 
-		Describe(".parse()", func() {
+		Describe(".parseGit()", func() {
 			Context("when git.gitString is not set", func() {
 				PIt("is expected to call .getGitString()", func() {})
 			})
@@ -53,7 +53,7 @@ var _ = Describe("Git{}", func() {
 				Expect(git.remoteBranch).To(Equal("origin/master"))
 			})
 			It("is expected to set git.direction", func() {
-				Expect(git.direction).To(Equal("ahead"))
+				Expect(git.direction).To(ContainSubstring("ahead"))
 			})
 			It("is expected to set git.dirty", func() {
 				Expect(git.dirty).To(Equal("*"))
@@ -69,9 +69,9 @@ var _ = Describe("Git{}", func() {
 
 	Context("When the current directory is not inside of a git tree", func() {
 		Describe(".Output()", func() {
-			git := Git{}
+			git := Git{gitString: "", parsed: true}
 
-			It("is expected to include ...", func() {
+			It("is expected to be empty", func() {
 				Expect(git.Output()).To(BeEmpty())
 			})
 		})

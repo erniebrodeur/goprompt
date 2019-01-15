@@ -2,6 +2,7 @@ package segments
 
 import (
 	"bufio"
+	"fmt"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -9,15 +10,8 @@ import (
 
 type Git struct {
 	branch, remoteBranch, direction, dirty, gitString string
+	parsed                                            bool
 }
-
-// type Git struct {
-// 	branch       string
-// 	remoteBranch string
-// 	direction    string
-// 	directionBy  int
-// 	dirty        bool
-// }
 
 var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>\w*)...(?P<remote_branch>\S*)(..(?P<direction>ahead|behind) (?P<direction_count>\d)]|)`)
 
@@ -31,52 +25,46 @@ func (g Git) Len() int {
 }
 
 func (g *Git) Output() string {
-	// g.parse()
-	// fmt.Println(g)
-	// // output := fmt.Sprintf(":%v", g.branch)
+	g.parseGit()
 
-	return ""
+	if g.gitString == "" {
+		return ""
+	}
+
+	output := fmt.Sprintf(":%v%v %v", g.branch, g.dirty, g.direction)
+
+	return output
 }
 
-func (g Git) dirtyOutput() string {
-	// if g.dirty {
-	// 	return "*"
-	// }
-
-	return ""
-}
-
-func (g Git) directionOutput() string {
-	// if len(g.direction) != 0 {
-	// 	if g.direction == "ahead" {
-	// 		return " (push)"
-	// 	}
-	// 	return " (pull)"
-	// }
-
-	return ""
-}
-func (g *Git) getGitString() {
+func (g *Git) runGit() {
 	out, err := exec.Command("git", "status", "--porcelain", "--ahead-behind", "-b").Output()
 
 	if err != nil {
-		g.gitString = string(out)
+		return
 	}
+
+	g.gitString = string(out)
 }
 
-func (g *Git) parse() Git {
-	if g.gitString == "" {
-		g.getGitString()
+func (g *Git) parseGit() Git {
+	if g.parsed == false {
+		g.runGit()
 	}
+
+	g.parsed = true
 
 	lines := strings.Split(string(g.gitString), "\n")
 
-	gitHeaderRegexp.MatchString(lines[0])
+	if g.gitString == "" {
+		return *g
+	}
 
+	gitHeaderRegexp.MatchString(lines[0])
 	parts := gitHeaderRegexp.FindAllStringSubmatch(lines[0], -1)
+
 	g.branch = parts[0][1]
 	g.remoteBranch = parts[0][2]
-	g.direction = parts[0][4]
+	g.direction = parts[0][3]
 
 	if len(lines) > 2 {
 		g.dirty = "*"
