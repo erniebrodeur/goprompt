@@ -31,7 +31,7 @@ func (g *Git) Output() string {
 		return ""
 	}
 
-	output := fmt.Sprintf(":%v%v %v", g.branch, g.dirty, g.direction)
+	output := fmt.Sprintf(":%v%v%v", g.branch, g.dirty, g.directionOutput())
 
 	return output
 }
@@ -74,4 +74,17 @@ func (g *Git) parseGit() Git {
 	scanner.Split(bufio.ScanLines)
 
 	return *g
+}
+
+func (g *Git) directionOutput() string {
+
+	if strings.Contains(g.direction, "ahead") {
+		return " (push)"
+	}
+
+	if strings.Contains(g.direction, "behind") {
+		return " (pull)"
+	}
+
+	return ""
 }

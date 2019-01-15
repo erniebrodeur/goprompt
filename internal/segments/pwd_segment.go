@@ -1,5 +1,9 @@
 package segments
 
+import (
+	"os"
+)
+
 type Pwd struct{}
 
 func (p Pwd) ColoredOutput() string {
@@ -12,5 +16,6 @@ func (p Pwd) Len() int {
 }
 
 func (p Pwd) Output() string {
-	return "master"
+	output, _ := os.Getwd()
+	return output
 }

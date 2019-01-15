@@ -27,8 +27,19 @@ func main() {
 		terminalWidth = int(ws.Col)
 	}
 
-	mid.Count = terminalWidth
-	status()
+	mid.Count = terminalWidth -
+		(left.Len() * 2) - (right.Len() * 2) -
+		git.Len() - pwd.Len() - host.Len() -
+		login.Len() - shell.Len() - 3 // space count - 1
+
+	output()
+}
+
+func output() {
+	l := left.Output()
+	r := right.Output()
+
+	fmt.Printf("%v %v%v %v%v%v %v%v %v", l, pwd.Output(), git.Output(), r, mid.Output(), l, login.Output(), host.Output(), r)
 }
 
 func status() {
