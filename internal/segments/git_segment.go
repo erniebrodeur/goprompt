@@ -2,6 +2,7 @@ package segments
 
 import (
 	"bufio"
+	"os/exec"
 	"regexp"
 	"strings"
 )
@@ -29,9 +30,10 @@ func (g Git) Len() int {
 	return len(g.Output())
 }
 
-func (g Git) Output() string {
-	// g = Git.parse(g)
-	// output := fmt.Sprintf(":%v", g.branch)
+func (g *Git) Output() string {
+	// g.parse()
+	// fmt.Println(g)
+	// // output := fmt.Sprintf(":%v", g.branch)
 
 	return ""
 }
@@ -54,19 +56,17 @@ func (g Git) directionOutput() string {
 
 	return ""
 }
-func (g Git) getGitString() {
+func (g *Git) getGitString() {
+	out, err := exec.Command("git", "status", "--porcelain", "--ahead-behind", "-b").Output()
 
+	if err != nil {
+		g.gitString = string(out)
+	}
 }
 
 func (g *Git) parse() Git {
-	// out, err := exec.Command("git", "status", "--porcelain", "--ahead-behind", "-b").Output()
-
-	// if err != nil {
-	// 	return g
-	// }
-
 	if g.gitString == "" {
-		// g.getGitOutput()
+		g.getGitString()
 	}
 
 	lines := strings.Split(string(g.gitString), "\n")
@@ -76,8 +76,7 @@ func (g *Git) parse() Git {
 	parts := gitHeaderRegexp.FindAllStringSubmatch(lines[0], -1)
 	g.branch = parts[0][1]
 	g.remoteBranch = parts[0][2]
-	// g.direction = parts[0][4]
-	// g.directionBy, _ = strconv.Atoi(parts[0][5])
+	g.direction = parts[0][4]
 
 	if len(lines) > 2 {
 		g.dirty = "*"
