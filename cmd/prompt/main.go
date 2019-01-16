@@ -39,7 +39,7 @@ func output() {
 	l := left.Output()
 	r := right.Output()
 
-	fmt.Printf("%v %v%v %v%v%v %v%v %v", l, pwd.Output(), git.Output(), r, mid.Output(), l, login.Output(), host.Output(), r)
+	fmt.Printf("%v %v%v %v%v%v %v%v %v\n%v ", l, pwd.Output(), git.Output(), r, mid.Output(), l, login.Output(), host.Output(), r, shell.Output())
 }
 
 func status() {

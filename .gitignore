@@ -2,3 +2,4 @@ prompt
 vendor/
 vendor/
 *.coverprofile
+*.coverprofile
