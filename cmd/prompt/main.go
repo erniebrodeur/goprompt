@@ -19,7 +19,7 @@ var (
 )
 
 func main() {
-	var terminalWidth = 40
+	var terminalWidth = 80
 
 	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
 
@@ -30,7 +30,7 @@ func main() {
 	mid.Count = terminalWidth -
 		(left.Len() * 2) - (right.Len() * 2) -
 		git.Len() - pwd.Len() - host.Len() -
-		login.Len() - shell.Len() - 3 // space count - 1
+		login.Len() - shell.Len() - 3 // space count - 1(?)
 
 	output()
 }

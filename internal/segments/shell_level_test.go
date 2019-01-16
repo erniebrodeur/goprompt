@@ -8,18 +8,6 @@ import (
 )
 
 var _ = Describe("ShellLevel{}", func() {
-	Describe("Output()", func() {
-		It("is expected to be %", func() {
-			Expect(ShellLevel{}.Output()).To(Equal("%"))
-		})
-	})
-
-	Describe("Len()", func() {
-		It("is expected to be the length of 1", func() {
-			Expect(ShellLevel{}.Len()).To(Equal(1))
-		})
-	})
-
 	Context("When the user is root", func() {
 		username := os.Getenv("USER")
 
@@ -30,6 +18,17 @@ var _ = Describe("ShellLevel{}", func() {
 				os.Setenv("USER", username)
 			})
 		})
+	})
 
+	Describe("Output()", func() {
+		It("is expected to be %%", func() {
+			Expect(ShellLevel{}.Output()).To(Equal("%"))
+		})
+	})
+
+	Describe("Len()", func() {
+		It("is expected to be the length of 1", func() {
+			Expect(ShellLevel{}.Len()).To(Equal(1))
+		})
 	})
 })

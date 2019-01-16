@@ -23,7 +23,7 @@ var _ = Describe("Host{}", func() {
 		})
 	})
 
-	Context("When environmental var SSH_CLIENT is set", func() {
+	Context("When the environmental variable SSH_CLIENT is set", func() {
 		originalClient := os.Getenv("SSH_CLIENT")
 		hostname, _ := os.Hostname()
 		wantedHostname := fmt.Sprintf("@%s", hostname)
