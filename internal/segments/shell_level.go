@@ -11,7 +11,7 @@ func (s ShellLevel) Output() string {
 		return "#"
 	}
 
-	return "%"
+	return "%%"
 }
 
 func (s ShellLevel) Len() int {

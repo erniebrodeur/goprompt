@@ -14,7 +14,7 @@ var _ = Describe("Pwd{}", func() {
 			Expect(Pwd{}.Output()).To(Equal(wd))
 		})
 
-		PContext("When the available length is not enough", func() {})
+		PContext("When the length of PWD is greater than 1/4th of terminalWidth", func() {})
 	})
 
 	Describe("Len()", func() {
