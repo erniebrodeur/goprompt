@@ -1,4 +1,4 @@
-package main // import "github.com/erniebrodeur/prompt"
+package main // import "github.com/erniebrodeur/goprompt"
 
 import (
 	"fmt"
