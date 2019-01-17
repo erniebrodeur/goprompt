@@ -1,4 +1,4 @@
-package segments_test
+package segments
 
 import (
 	"testing"
