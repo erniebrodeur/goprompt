@@ -1,4 +1,4 @@
-package segments // import "github.com/erniebrodeur/goprompt/internal/segments"
+package segments // import "github.com/erniebrodeur/goprompt"
 
 type Segment interface {
 	ColoredOutput() string
