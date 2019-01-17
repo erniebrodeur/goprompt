@@ -1,9 +1,9 @@
-package main // import "github.com/erniebrodeur/goprompt/cmd/prompt"
+package main // import "github.com/erniebrodeur/goprompt"
 
 import (
 	"fmt"
 
-	"github.com/erniebrodeur/prompt/internal/segments"
+	"github.com/erniebrodeur/goprompt/internal/segments"
 	"golang.org/x/sys/unix"
 )
 
