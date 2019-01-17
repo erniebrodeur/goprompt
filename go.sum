@@ -1,3 +1,5 @@
+github.com/erniebrodeur/goprompt v0.0.0-20190117080625-2d0094910b0d h1:z+2w8JOnBX/YPU4ErgZClMjjEGjbgFst5v3Z6vvCK7k=
+github.com/erniebrodeur/goprompt v0.0.0-20190117080625-2d0094910b0d/go.mod h1:DMvkpwNV9ewQrmiv5F0AVlYXZwH9k3Xeb5jsqFtXnDs=
 github.com/fatih/color v1.7.0 h1:DkWD4oS2D8LGGgTQ6IvwJJXSL5Vp2ffcQg58nFV38Ys=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
