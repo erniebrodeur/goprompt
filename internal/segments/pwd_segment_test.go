@@ -1,25 +1,29 @@
 package segments
 
 import (
-	"os"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Pwd{}", func() {
-	var wd, _ = os.Getwd()
+	path := "/a/path/somewhere"
+	long_path := "/a/really/long/path/somewhere"
+
 	Describe("Output()", func() {
 		It("is expected to be the current working directory", func() {
-			Expect(Pwd{}.Output()).To(Equal(wd))
+			Expect(Pwd{TerminalWidth: 80, Path: path}.Output()).To(Equal(path))
 		})
 
-		PContext("When the length of PWD is greater than 1/4th of terminalWidth", func() {})
+		Context("When the length of PWD is greater than 1/4th of terminalWidth", func() {
+			It("is expected to ...", func() {
+				Expect(Pwd{TerminalWidth: 80, Path: long_path}.Output()).To(Equal(path))
+			})
+		})
 	})
 
 	Describe("Len()", func() {
 		It("is expected to be the length of the current working directory.", func() {
-			Expect(Pwd{}.Len()).To(Equal(len(wd)))
+			Expect(Pwd{TerminalWidth: 80, Path: path}.Len()).To(Equal(len(path)))
 		})
 	})
 })

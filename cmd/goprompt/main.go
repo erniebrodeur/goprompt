@@ -2,6 +2,7 @@ package main // import "github.com/erniebrodeur/goprompt"
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/erniebrodeur/goprompt/internal/segments"
 	"golang.org/x/sys/unix"
@@ -19,13 +20,10 @@ var (
 )
 
 func main() {
-	var terminalWidth = 80
+	var terminalWidth = buildTerminalWidth()
 
-	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
-
-	if err == nil {
-		terminalWidth = int(ws.Col)
-	}
+	pwd.TerminalWidth = terminalWidth
+	pwd.Path = buildPwd()
 
 	mid.Count = terminalWidth -
 		(left.Len() * 2) - (right.Len() * 2) -
@@ -33,6 +31,22 @@ func main() {
 		login.Len() - shell.Len() - 3 // space count - 1(?)
 
 	output()
+}
+
+func buildTerminalWidth() int {
+	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
+
+	if err == nil {
+		return int(ws.Col)
+	}
+
+	return 80
+}
+
+func buildPwd() string {
+	output, _ := os.Getwd()
+
+	return output
 }
 
 func output() {

@@ -2,12 +2,13 @@ package segments
 
 import (
 	"fmt"
-	"os"
-
-	"golang.org/x/sys/unix"
+	"strings"
 )
 
-type Pwd struct{}
+type Pwd struct {
+	TerminalWidth int
+	Path          string
+}
 
 func (p Pwd) ColoredOutput() string {
 	return p.Output()
@@ -19,14 +20,22 @@ func (p Pwd) Len() int {
 }
 
 func (p Pwd) Output() string {
-	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
-	var terminalWidth int
+	return fmt.Sprintf(".../%v", p.t())
+}
 
-	if err == nil {
-		terminalWidth = int(ws.Col)
+func (p Pwd) t() string {
+	parts := strings.Split(p.Path, "/")
+	outputLen := 0
+	end := 0
+
+	for i := len(parts) - 1; i >= 0; i-- {
+		outputLen += len(parts[i]) + 1 // for the / char
+
+		if outputLen > p.TerminalWidth/4 {
+			end = i
+			break
+		}
 	}
 
-	fmt.Println(terminalWidth)
-	output, _ := os.Getwd()
-	return output
+	return strings.Join(parts[end:len(parts)], "/")
 }
