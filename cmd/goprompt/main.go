@@ -3,8 +3,8 @@ package main // import "github.com/erniebrodeur/goprompt"
 import (
 	"fmt"
 
+	"github.com/erniebrodeur/goprompt/internal/builders"
 	"github.com/erniebrodeur/goprompt/internal/segments"
-	"golang.org/x/sys/unix"
 )
 
 var (
@@ -19,22 +19,12 @@ var (
 )
 
 func main() {
-	mid.Count = buildTerminalWidth() -
+	mid.Count = builders.TerminalWidth() -
 		(left.Len() * 2) - (right.Len() * 2) -
 		git.Len() - pwd.Len() - host.Len() -
 		login.Len() - shell.Len() - 3 // space count - 1(?)
 
 	output()
-}
-
-func buildTerminalWidth() int {
-	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
-
-	if err == nil {
-		return int(ws.Col)
-	}
-
-	return 80
 }
 
 func output() {

@@ -1,10 +1,9 @@
 package segments
 
 import (
-	"os"
 	"strings"
 
-	"golang.org/x/sys/unix"
+	"github.com/erniebrodeur/goprompt/internal/builders"
 )
 
 // Pwd is for returning the current directory
@@ -16,25 +15,9 @@ type Pwd struct {
 // NewPwd will generate a new copy of pwd{} with default builders
 func NewPwd() *Pwd {
 	p := Pwd{}
-	p.terminalWidthBuilder = buildTerminalWidth
-	p.pwdBuilder = buildPwd
+	p.terminalWidthBuilder = builders.TerminalWidth
+	p.pwdBuilder = builders.Pwd
 	return &p
-}
-
-func buildTerminalWidth() int {
-	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
-
-	if err == nil {
-		return int(ws.Col)
-	}
-
-	return 80
-}
-
-func buildPwd() string {
-	output, _ := os.Getwd()
-
-	return output
 }
 
 // ColoredOutput returns a color wrapped copy
@@ -49,17 +32,18 @@ func (p Pwd) Len() int {
 
 // Output returns a specially modified pwd for space constraints
 func (p Pwd) Output() string {
-	parts := strings.Split(buildPwd(), "/")
+	parts := strings.Split(p.pwdBuilder(), "/")
 	outputLen := 0
 	end := 0
 
 	for i := len(parts) - 1; i >= 0; i-- {
 		outputLen += len(parts[i]) + 1 // for the / char
 
-		if outputLen > buildTerminalWidth()/4 {
+		if outputLen > p.terminalWidthBuilder()/4 {
 			end = i
 			return ".../" + strings.Join(parts[end:len(parts)], "/")
 		}
 	}
-	return buildPwd()
+
+	return p.pwdBuilder()
 }

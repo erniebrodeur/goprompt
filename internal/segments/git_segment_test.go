@@ -21,7 +21,7 @@ var _ = Describe("Git{}", func() {
 		Describe(".Output()", func() {
 			Context("and the local repo is ahead of the remote repo", func() {
 				It("is expected to include (push)", func() {
-					git.runner = func() string { return ahead }
+					git.gitBuilder = func() string { return ahead }
 					git.parseGit()
 					Expect(git.direction).To(ContainSubstring("(push)"))
 				})
@@ -29,7 +29,7 @@ var _ = Describe("Git{}", func() {
 
 			Context("and the local repo is behind the remote repo", func() {
 				It("is expected to include (pull)", func() {
-					git.runner = func() string { return behind }
+					git.gitBuilder = func() string { return behind }
 					git.parseGit()
 					Expect(git.direction).To(ContainSubstring("(pull)"))
 				})
@@ -38,7 +38,7 @@ var _ = Describe("Git{}", func() {
 
 		Describe(".parseGit()", func() {
 			JustBeforeEach(func() {
-				git.runner = func() string { return ahead }
+				git.gitBuilder = func() string { return ahead }
 				git.parseGit()
 			})
 
@@ -60,7 +60,7 @@ var _ = Describe("Git{}", func() {
 	Context("When the current directory is not inside of a git tree", func() {
 		Describe(".Output()", func() {
 			git := NewGit()
-			git.runner = func() string { return "" }
+			git.gitBuilder = func() string { return "" }
 
 			It("is expected to be empty", func() {
 				Expect(git.Output()).To(BeEmpty())

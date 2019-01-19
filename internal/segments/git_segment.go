@@ -2,14 +2,16 @@ package segments
 
 import (
 	"fmt"
-	"os/exec"
 	"regexp"
 	"strings"
+
+	"github.com/erniebrodeur/goprompt/internal/builders"
 )
 
+// Git is for returning a specialized string representing the directories git status
 type Git struct {
 	branch, remoteBranch, direction, dirty, gitString string
-	runner                                            func() string
+	gitBuilder                                        func() string
 }
 
 var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>\w*)...(?P<remote_branch>\S*)(..(?P<direction>ahead|behind) (?P<direction_count>\d)]|)`)
@@ -17,7 +19,7 @@ var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>\w*)...(?P<remote_
 // NewGit returns an instantiated Git Struct
 func NewGit() *Git {
 	g := Git{}
-	g.runner = runGit
+	g.gitBuilder = builders.Git
 	return &g
 }
 
@@ -42,18 +44,8 @@ func (g *Git) Output() string {
 	return fmt.Sprintf(":%v%v%v", g.branch, g.dirty, g.direction)
 }
 
-func runGit() string {
-	out, err := exec.Command("git", "status", "--porcelain", "--ahead-behind", "-b").Output()
-
-	if err != nil {
-		return ""
-	}
-
-	return string(out)
-}
-
 func (g *Git) parseGit() Git {
-	g.gitString = g.runner()
+	g.gitString = g.gitBuilder()
 
 	if g.gitString == "" {
 		return *g
