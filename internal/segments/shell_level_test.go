@@ -22,7 +22,7 @@ var _ = Describe("ShellLevel{}", func() {
 
 	Describe("Output()", func() {
 		It("is expected to be %%", func() {
-			Expect(ShellLevel{}.Output()).To(Equal("%"))
+			Expect(ShellLevel{}.Output()).To(Equal("%%"))
 		})
 	})
 

@@ -3,3 +3,4 @@ vendor/
 vendor/
 *.coverprofile
 *.coverprofile
+goprompt

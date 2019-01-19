@@ -1,7 +1,6 @@
 package segments
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -20,10 +19,6 @@ func (p Pwd) Len() int {
 }
 
 func (p Pwd) Output() string {
-	return fmt.Sprintf(".../%v", p.t())
-}
-
-func (p Pwd) t() string {
 	parts := strings.Split(p.Path, "/")
 	outputLen := 0
 	end := 0

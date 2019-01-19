@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	git   = segments.Git{}
+	git   = segments.NewGit()
 	host  = segments.Host{}
 	left  = segments.Bookend{Left: true}
 	login = segments.Login{}
@@ -21,7 +21,6 @@ var (
 
 func main() {
 	var terminalWidth = buildTerminalWidth()
-
 	pwd.TerminalWidth = terminalWidth
 	pwd.Path = buildPwd()
 

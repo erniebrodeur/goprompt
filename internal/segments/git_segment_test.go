@@ -5,45 +5,41 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// type Git struct {
-// 	branch, remoteBranch, direction, dirty string
-// }
+var (
+	ahead  = "## master...origin/master [ahead 1]\n				M internal/segments/git_segment.go\n				M internal/segments/git_segment_test.go"
+	behind = "## master...origin/master [behind 1]\n				M internal/segments/git_segment.go\n				M internal/segments/git_segment_test.go"
+)
 
 var _ = Describe("Git{}", func() {
+	var git = NewGit()
+
+	JustBeforeEach(func() {
+		git = NewGit()
+	})
+
 	Context("When the current directory is inside of a git tree", func() {
-		git := Git{parsed: true, gitString: "## master...origin/master [ahead 1]\n				M internal/segments/git_segment.go\n				M internal/segments/git_segment_test.go"}
-
-		JustBeforeEach(func() {
-			git.parseGit()
-		})
-
-		PDescribe(".Output()", func() {
-			git := Git{}
-
-			It("is expected to include ...", func() {
-				Expect(git.Output()).NotTo(BeEmpty())
-			})
-
+		Describe(".Output()", func() {
 			Context("and the local repo is ahead of the remote repo", func() {
-				git := Git{}
-
 				It("is expected to include (push)", func() {
+					git.runner = func() string { return ahead }
+					git.parseGit()
 					Expect(git.direction).To(ContainSubstring("(push)"))
 				})
 			})
 
-			Context("and the local repo is behind of the remote repo", func() {
-				git := Git{}
-
+			Context("and the local repo is behind the remote repo", func() {
 				It("is expected to include (pull)", func() {
+					git.runner = func() string { return behind }
+					git.parseGit()
 					Expect(git.direction).To(ContainSubstring("(pull)"))
 				})
 			})
 		})
 
 		Describe(".parseGit()", func() {
-			Context("when git.gitString is not set", func() {
-				PIt("is expected to call .getGitString()", func() {})
+			JustBeforeEach(func() {
+				git.runner = func() string { return ahead }
+				git.parseGit()
 			})
 
 			It("is expected to set git.branch", func() {
@@ -53,23 +49,18 @@ var _ = Describe("Git{}", func() {
 				Expect(git.remoteBranch).To(Equal("origin/master"))
 			})
 			It("is expected to set git.direction", func() {
-				Expect(git.direction).To(ContainSubstring("ahead"))
+				Expect(git.direction).To(ContainSubstring("(push)"))
 			})
 			It("is expected to set git.dirty", func() {
 				Expect(git.dirty).To(Equal("*"))
 			})
-
-		})
-
-		PDescribe(".getGitString()", func() {
-			PIt("is expected to set git.gitString", func() {})
-			PIt("is expected to call exec.Command() ...", func() {})
 		})
 	})
 
 	Context("When the current directory is not inside of a git tree", func() {
 		Describe(".Output()", func() {
-			git := Git{gitString: "", parsed: true}
+			git := NewGit()
+			git.runner = func() string { return "" }
 
 			It("is expected to be empty", func() {
 				Expect(git.Output()).To(BeEmpty())
