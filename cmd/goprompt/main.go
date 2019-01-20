@@ -8,29 +8,29 @@ import (
 )
 
 var (
-	git   = segments.NewGit()
-	host  = segments.Host{}
-	left  = segments.Bookend{Left: true}
-	login = segments.Login{}
-	mid   = segments.Mid{}
-	pwd   = segments.NewPwd()
-	right = segments.Bookend{}
-	shell = segments.ShellLevel{}
+	git         = segments.NewGit()
+	host        = segments.Host{}
+	left        = segments.Bookend{Left: true}
+	login       = segments.Login{}
+	mid         = segments.Mid{}
+	pwd         = segments.NewPwd()
+	right       = segments.Bookend{}
+	shell       = segments.ShellLevel{}
+	currentTime = segments.CurrentTime{}
 )
 
 func main() {
 	mid.Count = builders.TerminalWidth() -
 		(left.Len() * 2) - (right.Len() * 2) -
 		git.Len() - pwd.Len() - host.Len() -
-		login.Len() - shell.Len() - 3 // space count - 1(?)
-
+		login.Len() - shell.Len() - currentTime.Len() - 7 // space count - 1(?)
 	output()
 }
 
 func output() {
 	l := left.Output()
 	r := right.Output()
-	fmt.Printf("%v %v%v %v%v%v %v%v %v\n%v ", l, pwd.Output(), git.Output(), r, mid.Output(), l, login.Output(), host.Output(), r, shell.Output())
+	fmt.Printf("%v %v%v %v%v%v %v%v %v%v %v %v\n%v ", l, pwd.Output(), git.Output(), r, mid.Output(), l, login.Output(), host.Output(), r, l, currentTime.Output(), r, shell.Output())
 }
 
 func status() {
@@ -41,5 +41,6 @@ func status() {
 	fmt.Printf("login:         %v\n", login.Output())
 	fmt.Printf("mid:           %v\n", mid.Output())
 	fmt.Printf("pwd:           %v\n", pwd.Output())
+	fmt.Printf("time:          %v\n", currentTime.Output())
 	fmt.Printf("shell:         %v\n", shell.Output())
 }
