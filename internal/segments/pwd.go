@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/erniebrodeur/goprompt/internal/builders"
+	"github.com/mgutz/ansi"
 )
 
 // Pwd is for returning the current directory
@@ -23,7 +24,7 @@ func NewPwd() *Pwd {
 
 // ColoredOutput returns a color wrapped copy
 func (p Pwd) ColoredOutput() string {
-	return p.Output()
+	return ansi.ColorFunc("green+h:black")(p.Output())
 }
 
 // Len return length of string without invisible characters counted
@@ -44,7 +45,7 @@ func (p Pwd) Output() string {
 	for i := len(parts) - 1; i >= 0; i-- {
 		outputLen += len(parts[i]) + 1 // for the / char
 
-		if outputLen > p.terminalWidthBuilder()/4 {
+		if outputLen > p.terminalWidthBuilder()/8 {
 			end = i
 			return ".../" + strings.Join(parts[end:len(parts)], "/")
 		}

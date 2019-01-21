@@ -2,6 +2,8 @@ package segments
 
 import (
 	"strings"
+
+	"github.com/mgutz/ansi"
 )
 
 type Mid struct {
@@ -9,7 +11,7 @@ type Mid struct {
 }
 
 func (m Mid) ColoredOutput() string {
-	return m.Output()
+	return ansi.ColorFunc("blue+h:black")(m.Output())
 }
 
 // Len return length of string without invisible characters counted

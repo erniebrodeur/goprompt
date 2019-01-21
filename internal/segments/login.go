@@ -1,11 +1,17 @@
 package segments
 
-import "os"
+import (
+	"os"
+
+	"github.com/mgutz/ansi"
+)
 
 type Login struct{}
 
 func (l Login) ColoredOutput() string {
-	return l.Output()
+	phosphorize := ansi.ColorFunc("green+h:black")
+
+	return phosphorize(l.Output())
 }
 
 // Len return length of string without invisible characters counted

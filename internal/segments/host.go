@@ -3,12 +3,15 @@ package segments
 import (
 	"fmt"
 	"os"
+
+	"github.com/mgutz/ansi"
 )
 
 type Host struct{}
 
 func (h Host) ColoredOutput() string {
-	return h.Output()
+	yellow := ansi.ColorFunc("yellow+h:black")
+	return yellow(h.Output())
 }
 
 // Len return length of string without invisible characters counted
