@@ -23,7 +23,6 @@ func main() {
 		git.Len() - pwd.Len() - host.Len() -
 		login.Len() - shell.Len() - currentTime.Len() - 17 // special + spaces
 
-	status()
 	output()
 }
 
