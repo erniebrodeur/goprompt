@@ -11,8 +11,13 @@ type CurrentTime time.Time
 
 // ColoredOutput the colorized version
 func (t CurrentTime) ColoredOutput() string {
-	yellow := ansi.ColorFunc("cyan+h:black")
-	return yellow(t.Output())
+	// little more complex than the rest
+	_time := fmt.Sprintf("%v", time.Now().Format("03:04pm"))
+	date := fmt.Sprintf("%v", time.Now().Format("1/2"))
+	cyan := ansi.ColorFunc("cyan+h:black")
+	blue := ansi.ColorFunc("blue+h:black")
+
+	return fmt.Sprintf("%v%v%v", cyan(_time), blue(" ─ "), cyan(date))
 }
 
 // Len return length of string without invisible characters counted
