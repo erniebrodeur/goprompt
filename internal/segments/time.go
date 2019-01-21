@@ -7,6 +7,7 @@ import (
 	"github.com/mgutz/ansi"
 )
 
+// CurrentTime is a formated representation of the current time
 type CurrentTime time.Time
 
 // ColoredOutput the colorized version

@@ -22,7 +22,7 @@ func NewPwd() *Pwd {
 	return &p
 }
 
-// ColoredOutput returns a color wrapped copy
+// ColoredOutput returns a color wrapped copy of Output
 func (p Pwd) ColoredOutput() string {
 	return ansi.ColorFunc("green+h:black")(p.Output())
 }
@@ -47,7 +47,7 @@ func (p Pwd) Output() string {
 
 		if outputLen > p.terminalWidthBuilder()/8 {
 			end = i
-			return ".../" + strings.Join(parts[end:len(parts)], "/")
+			return ".../" + strings.Join(parts[end:], "/")
 		}
 	}
 

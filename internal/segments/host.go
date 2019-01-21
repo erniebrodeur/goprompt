@@ -7,8 +7,10 @@ import (
 	"github.com/mgutz/ansi"
 )
 
+// Host is for returning the host if SSH'ed in
 type Host struct{}
 
+// ColoredOutput returns a color wrapped copy of Output
 func (h Host) ColoredOutput() string {
 	yellow := ansi.ColorFunc("yellow+h:black")
 	return yellow(h.Output())
@@ -19,6 +21,7 @@ func (h Host) Len() int {
 	return len(h.Output())
 }
 
+// Output the host if env SSH_CLIENT is set
 func (h Host) Output() string {
 	sshClient := os.Getenv("SSH_CLIENT")
 
