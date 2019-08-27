@@ -1,7 +1,6 @@
 package segments
 
 import (
-	"os"
 	"strings"
 
 	"github.com/erniebrodeur/goprompt/internal/builders"
@@ -35,12 +34,17 @@ func (p Pwd) Len() int {
 // Output returns a specially modified pwd for space constraints
 func (p Pwd) Output() string {
 	pwd := p.pwdBuilder()
-	homeDir := os.Getenv("HOME")
+	// homeDir := os.Getenv("HOME")
 
-	fixedPwd := strings.Replace(pwd, homeDir, "~", 1)
-	parts := strings.Split(fixedPwd, "/")
+	// fixedPwd := strings.Replace(pwd, homeDir, "~", 1)
+	parts := strings.Split(pwd, "/")
 	outputLen := 0
 	end := 0
+
+	// just doesn't work if parts is short.
+	if len(parts) <= 3 {
+		return pwd
+	}
 
 	for i := len(parts) - 1; i >= 0; i-- {
 		outputLen += len(parts[i]) + 1 // for the / char
@@ -51,5 +55,5 @@ func (p Pwd) Output() string {
 		}
 	}
 
-	return fixedPwd
+	return pwd
 }
