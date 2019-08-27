@@ -12,7 +12,7 @@ type Host struct{}
 
 // ColoredOutput returns a color wrapped copy of Output
 func (h Host) ColoredOutput() string {
-	yellow := ansi.ColorFunc("yellow+h:black")
+	yellow := ansi.ColorFunc("yellow+h:defaultbg")
 	return yellow(h.Output())
 }
 

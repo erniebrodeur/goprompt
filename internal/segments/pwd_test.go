@@ -1,12 +1,14 @@
 package segments
 
 import (
+	"strings"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Pwd{}", func() {
-	path := "/a/path/somewhere"
+	path := "/path"
 	longPath := "/a/really/long/path/somewhere"
 	var pwd = &Pwd{}
 
@@ -23,7 +25,7 @@ var _ = Describe("Pwd{}", func() {
 		Context("When the length of PWD is greater than 1/4th of terminalWidth", func() {
 			It("is expected to replace segments on the left with ...", func() {
 				pwd.pwdBuilder = func() string { return longPath }
-				Expect(pwd.Output()).To(Equal(".../really/long/path/somewhere"))
+				Expect(strings.HasPrefix(pwd.Output(), "...")).To(Equal(true))
 			})
 		})
 	})
