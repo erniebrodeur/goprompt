@@ -1,17 +1,24 @@
 module github.com/erniebrodeur/goprompt
 
+go 1.19
+
 require (
-	github.com/derekparker/delve v1.1.0 // indirect
-	github.com/fatih/color v1.7.0 // indirect
-	github.com/golang/mock v1.2.0 // indirect
-	github.com/mattn/go-colorable v0.0.9 // indirect
-	github.com/mattn/go-isatty v0.0.4 // indirect
-	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b
-	github.com/novln/macchiato v0.0.0-20171222151857-28d5f157d7ee
-	github.com/onsi/ginkgo v1.7.0
-	github.com/onsi/gomega v1.4.3
-	github.com/sirupsen/logrus v1.3.0 // indirect
-	golang.org/x/arch v0.0.0-20181203225421-5a4828bb7045 // indirect
-	golang.org/x/sys v0.0.0-20190116161447-11f53e031339
-	golang.org/x/tools v0.0.0-20190118193359-16909d206f00 // indirect
+	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d
+	github.com/novln/macchiato v1.0.2
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.27.10
+	golang.org/x/sys v0.11.0
+)
+
+require (
+	github.com/fatih/color v1.15.0 // indirect
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/nxadm/tail v1.4.8 // indirect
+	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
+	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

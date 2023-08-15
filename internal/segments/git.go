@@ -15,7 +15,7 @@ type Git struct {
 	gitBuilder                                        func() string
 }
 
-var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>\w*)...(?P<remote_branch>\S*)(..(?P<direction>ahead|behind) (?P<direction_count>\d)]|)`)
+var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>\S*)\.\.\.(?P<remote_branch>\S*)(..(?P<direction>ahead|behind) (?P<direction_count>\d)]|)`)
 
 // NewGit returns an instantiated Git Struct
 func NewGit() *Git {
