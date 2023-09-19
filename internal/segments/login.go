@@ -11,7 +11,7 @@ type Login struct{}
 
 // ColoredOutput returns a color wrapped copy of Output
 func (l Login) ColoredOutput() string {
-	green := ansi.ColorFunc("green+h:black")
+	green := ansi.ColorFunc("green+h")
 
 	return green(l.Output())
 }

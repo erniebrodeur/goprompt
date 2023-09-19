@@ -23,7 +23,7 @@ func NewPwd() *Pwd {
 
 // ColoredOutput returns a color wrapped copy of Output
 func (p Pwd) ColoredOutput() string {
-	return ansi.ColorFunc("green+h:black")(p.Output())
+	return ansi.ColorFunc("green+h")(p.Output())
 }
 
 // Len return length of string without invisible characters counted

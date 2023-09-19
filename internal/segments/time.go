@@ -15,8 +15,8 @@ func (t CurrentTime) ColoredOutput() string {
 	// little more complex than the rest
 	_time := fmt.Sprintf("%v", time.Now().Format("03:04pm"))
 	date := fmt.Sprintf("%v", time.Now().Format("1/2"))
-	cyan := ansi.ColorFunc("cyan+h:defaultbg")
-	blue := ansi.ColorFunc("blue+h:defaultbg")
+	cyan := ansi.ColorFunc("cyan+h")
+	blue := ansi.ColorFunc("blue+h")
 
 	return fmt.Sprintf("%v%v%v", cyan(_time), blue(" ─ "), cyan(date))
 }

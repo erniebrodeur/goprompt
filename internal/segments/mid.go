@@ -13,7 +13,7 @@ type Mid struct {
 
 // ColoredOutput returns a color wrapped copy of Output
 func (m Mid) ColoredOutput() string {
-	return ansi.ColorFunc("blue+h:black")(m.Output())
+	return ansi.ColorFunc("blue+h")(m.Output())
 }
 
 // Len return length of string without invisible characters counted

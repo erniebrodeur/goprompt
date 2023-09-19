@@ -27,7 +27,7 @@ func NewGit() *Git {
 
 // ColoredOutput returns Output wrapped in a color
 func (g *Git) ColoredOutput() string {
-	return ansi.ColorFunc("green+h:black")(g.Output())
+	return ansi.ColorFunc("yellow+h")(g.Output())
 }
 
 // Len return length of string without invisible characters counted
