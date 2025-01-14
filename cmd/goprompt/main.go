@@ -27,8 +27,8 @@ func main() {
 }
 
 func output() {
-	left := ansi.ColorFunc("blue+h:black")("─┤ ")
-	right := ansi.ColorFunc("blue+h:black")(" ├─")
+	left := ansi.ColorFunc("blue+h")("─┤ ")
+	right := ansi.ColorFunc("blue+h")(" ├─")
 	fmt.Printf("%v%v%v%v%v%v%v%v%v%v%v%v\n%v ",
 		left, pwd.ColoredOutput(), git.ColoredOutput(), right,
 		left, login.ColoredOutput(), host.ColoredOutput(), right,

@@ -15,7 +15,8 @@ type Git struct {
 	gitBuilder                                        func() string
 }
 
-var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>\w*)...(?P<remote_branch>\S*)(..(?P<direction>ahead|behind) (?P<direction_count>\d)]|)`)
+// var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>(\S*|HEAD \(no branch\)))(\.\.\.|$)(?P<remote_branch>\S*)(..(?P<direction>ahead|behind) (?P<direction_count>\d)]|)`)
+var gitHeaderRegexp = regexp.MustCompile(`## (\S*)(?:\.\.\.(\S*))( (?:\[(ahead|behind) (\d+))\]|)`)
 
 // NewGit returns an instantiated Git Struct
 func NewGit() *Git {
@@ -26,7 +27,7 @@ func NewGit() *Git {
 
 // ColoredOutput returns Output wrapped in a color
 func (g *Git) ColoredOutput() string {
-	return ansi.ColorFunc("green+h:black")(g.Output())
+	return ansi.ColorFunc("yellow+h")(g.Output())
 }
 
 // Len return length of string without invisible characters counted
@@ -52,7 +53,17 @@ func (g *Git) parseGit() Git {
 		return *g
 	}
 
-	lines := strings.Split(string(g.gitString), "\n")
+	if strings.Contains(g.gitString, "HEAD (no branch)") {
+		g.branch = "HEAD (no branch)"
+		return *g
+	}
+
+	if !strings.Contains(g.gitString, "...") {
+		g.branch = strings.Split(g.gitString, "## ")[1]
+		return *g
+	}
+
+	lines := strings.Split(g.gitString, "\n")
 
 	gitHeaderRegexp.MatchString(lines[0])
 	parts := gitHeaderRegexp.FindAllStringSubmatch(lines[0], -1)
