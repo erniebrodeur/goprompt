@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"os/exec"
 	"strings"
+
+	"github.com/erniebrodeur/goprompt/internal/model"
 )
 
 type GitSegment struct{}
@@ -18,23 +20,23 @@ func (g *GitSegment) Enabled() bool {
     return cmd.Run() == nil
 }
 
-func (g *GitSegment) Output() (SegmentOutput, error) {
+func (g *GitSegment) Output() (model.SegmentOutput, error) {
     branch, err := runCmd("git", "rev-parse", "--abbrev-ref", "HEAD")
     if err != nil {
-        return SegmentOutput{}, err
+        return model.SegmentOutput{}, err
     }
     branch = strings.TrimSpace(branch)
 
     status, err := runCmd("git", "status", "--porcelain")
     if err != nil {
-        return SegmentOutput{}, err
+        return model.SegmentOutput{}, err
     }
     dirty := ""
     if len(strings.TrimSpace(status)) > 0 {
         dirty = "*"
     }
 
-    return SegmentOutput{
+    return model.SegmentOutput{
         Name: "git",
         Text: branch + dirty,
     }, nil

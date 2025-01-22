@@ -1,30 +1,43 @@
 package theme
 
 import (
-	"fmt"
-
-	"github.com/erniebrodeur/goprompt/internal/colors"
-	"github.com/erniebrodeur/goprompt/internal/segment"
+	"github.com/erniebrodeur/goprompt/internal/model"
+	"github.com/muesli/termenv"
 )
 
-// DefaultTheme applies colors based on segment name or flags like IsRoot.
+// DefaultTheme uses termenv for 24-bit color
 type DefaultTheme struct{}
 
-func (d DefaultTheme) Colorize(segData segment.SegmentOutput) string {
+// Colorize applies different colors based on segment name or flags (e.g., IsRoot).
+func (d DefaultTheme) Colorize(segData model.SegmentOutput) string {
+    // Determine terminal color profile once
+    p := termenv.ColorProfile()
+
+    // Base text
+    styled := termenv.String(segData.Text)
+
     switch segData.Name {
     case "directory":
-        return fmt.Sprintf("%s%s%s", colors.BrightBlue, segData.Text, colors.Reset)
+        // Example: bright blue
+        styled = styled.Foreground(p.Color("#005fff"))
+
     case "user":
         if segData.IsRoot {
-            return fmt.Sprintf("%s%s%s", colors.BrightRed, segData.Text, colors.Reset)
+            styled = styled.Foreground(p.Color("#ff0000")) // bright red for root
+        } else {
+            styled = styled.Foreground(p.Color("#00ff00")) // green for normal user
         }
-        return fmt.Sprintf("%s%s%s", colors.BrightGreen, segData.Text, colors.Reset)
+
     case "time":
-        return fmt.Sprintf("%s%s%s", colors.BrightCyan, segData.Text, colors.Reset)
+        styled = styled.Foreground(p.Color("#00ffff")) // cyan
+
     case "git":
-        return fmt.Sprintf("%s%s%s", colors.BrightYellow, segData.Text, colors.Reset)
+        styled = styled.Foreground(p.Color("#ffff00")) // yellow
+
+    // Add other segments or defaults as needed
     default:
-        // If no match, just return the text uncolored
-        return segData.Text
+        // No special color
     }
+
+    return styled.String()
 }

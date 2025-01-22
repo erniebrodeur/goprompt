@@ -3,6 +3,8 @@ package segment
 import (
 	"os"
 	"os/user"
+
+	"github.com/erniebrodeur/goprompt/internal/model"
 )
 
 type UserSegment struct {
@@ -17,24 +19,24 @@ func NewUserSegment() *UserSegment {
 func (u *UserSegment) Name() string  { return "user" }
 func (u *UserSegment) Enabled() bool { return true }
 
-func (u *UserSegment) Output() (SegmentOutput, error) {
+func (u *UserSegment) Output() (model.SegmentOutput, error) {
     if u.u == nil {
-        return SegmentOutput{}, nil
+        return model.SegmentOutput{}, nil
     }
 
     username := u.u.Username
-    root := (os.Geteuid() == 0)
-    ssh := false
+    isRoot := (os.Geteuid() == 0)
+    isSSH := false
     if os.Getenv("SSH_CONNECTION") != "" {
-        ssh = true
+        isSSH = true
         host, _ := os.Hostname()
         username = username + "@" + host
     }
 
-    return SegmentOutput{
+    return model.SegmentOutput{
         Name:   "user",
         Text:   username,
-        IsRoot: root,
-        IsSSH:  ssh,
+        IsRoot: isRoot,
+        IsSSH:  isSSH,
     }, nil
 }

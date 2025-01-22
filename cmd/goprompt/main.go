@@ -6,6 +6,7 @@ import (
 
 	"github.com/erniebrodeur/goprompt/internal/segment"
 	"github.com/erniebrodeur/goprompt/internal/term"
+	"github.com/erniebrodeur/goprompt/internal/theme"
 )
 
 func main() {
@@ -18,20 +19,20 @@ func main() {
 func run() error {
     width, err := term.GetWidth()
     if err != nil {
-        return fmt.Errorf("failed to get terminal width: %w", err)
+        return err
     }
 
+    // Ensure we assign a real Theme so it's never nil.
     mgr := &segment.Manager{
         LeftSegments: []segment.Segment{
-            // Add as many left segments as you want:
             segment.NewDirSegment(),
             segment.NewUserSegment(),
-            // e.g. segment.NewGitSegment(),
+            // segment.NewGitSegment(), etc. if needed
         },
         RightSegments: []segment.Segment{
-            // Put your right-side segments here:
             segment.NewTimeSegment(),
         },
+        Theme: theme.DefaultTheme{}, // ← The crucial fix!
     }
 
     prompt := mgr.BuildPrompt(width, term.DisplayWidth)
