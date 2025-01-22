@@ -3,51 +3,57 @@ package segment
 import (
 	"fmt"
 	"strings"
+
+	"github.com/erniebrodeur/goprompt/internal/theme"
 )
 
+// Segment defines the minimal interface for a prompt segment.
+// No color or glyphs should be returned—just raw data/flags.
 type Segment interface {
     Name() string
     Enabled() bool
-    Render() (string, error)
+    Output() (SegmentOutput, error)
 }
 
 type Manager struct {
     LeftSegments  []Segment
     RightSegments []Segment
+    // Theme to apply color/wrapping
+    Theme theme.Theme
 }
 
+// BuildPrompt assembles the full line, including filler "─" between left & right.
 func (m *Manager) BuildPrompt(width int, displayWidth func(string) int) string {
-    leftStr  := m.buildSideLeft(m.LeftSegments)
+    leftStr := m.buildSideLeft(m.LeftSegments)
     rightStr := m.buildSideRight(m.RightSegments)
 
-    leftLen  := displayWidth(leftStr)
+    leftLen := displayWidth(leftStr)
     rightLen := displayWidth(rightStr)
     gap := width - (leftLen + rightLen)
     if gap < 0 {
         gap = 0
     }
 
-    // The filler: a "┤" plus a run of "─" dashes
+    // Insert "┤" plus a run of "─" to fill
     filler := "┤" + strings.Repeat("─", gap)
-
-    // Combine them into the final single-line prompt
     return leftStr + filler + rightStr
 }
 
-// buildSideLeft: handles your left segments
 func (m *Manager) buildSideLeft(segs []Segment) string {
     out := ""
     for i, seg := range segs {
         if seg.Enabled() {
-            txt, err := seg.Render()
-            if err == nil && txt != "" {
-                switch i {
-                case 0:
-                    // The *first* left segment: "─┤ <txt> ├──"
-                    out += wrapSegmentLeftFirst(txt)
-                default:
-                    // Subsequent left segments: "┤ <txt> ├"
-                    out += wrapSegmentLeftNext(txt)
+            data, err := seg.Output()
+            if err == nil && data.Text != "" {
+                // 1) Theme color
+                colored := m.Theme.Colorize(data)
+                // 2) Wrap with bookshelf glyphs
+                // first left segment => "─┤ <colored> ├──"
+                // subsequent => "┤ <colored> ├"
+                if i == 0 {
+                    out += fmt.Sprintf("─┤ %s ├──", colored)
+                } else {
+                    out += fmt.Sprintf("┤ %s ├", colored)
                 }
             }
         }
@@ -55,39 +61,22 @@ func (m *Manager) buildSideLeft(segs []Segment) string {
     return out
 }
 
-// buildSideRight: handles your right segments
 func (m *Manager) buildSideRight(segs []Segment) string {
     out := ""
     for i, seg := range segs {
         if seg.Enabled() {
-            txt, err := seg.Render()
-            if err == nil && txt != "" {
-                // If it's NOT the last one, or if you have multiple right segments:
-                // "┤ <txt> ├"
-                // If it's the final right segment: "┤ <txt> ├─"
+            data, err := seg.Output()
+            if err == nil && data.Text != "" {
+                colored := m.Theme.Colorize(data)
+                // last right segment => "┤ <colored> ├─"
+                // others => "┤ <colored> ├"
                 if i == len(segs)-1 {
-                    out += wrapSegmentRightLast(txt)
+                    out += fmt.Sprintf("┤ %s ├─", colored)
                 } else {
-                    out += wrapSegmentRightMid(txt)
+                    out += fmt.Sprintf("┤ %s ├", colored)
                 }
             }
         }
     }
     return out
-}
-
-func wrapSegmentLeftFirst(s string) string {
-    return fmt.Sprintf("─┤ %s ├──", s)
-}
-
-func wrapSegmentLeftNext(s string) string {
-    return fmt.Sprintf("┤ %s ├", s)
-}
-
-func wrapSegmentRightMid(s string) string {
-    return fmt.Sprintf("┤ %s ├", s)
-}
-
-func wrapSegmentRightLast(s string) string {
-    return fmt.Sprintf("┤ %s ├─", s)
 }

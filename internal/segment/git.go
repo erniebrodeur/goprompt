@@ -2,11 +2,8 @@ package segment
 
 import (
 	"bytes"
-	"fmt"
 	"os/exec"
 	"strings"
-
-	"github.com/erniebrodeur/goprompt/internal/colors"
 )
 
 type GitSegment struct{}
@@ -15,32 +12,32 @@ func NewGitSegment() *GitSegment {
     return &GitSegment{}
 }
 
-func (g *GitSegment) Name() string { return "git" }
-
-// If we're in a git repo
+func (g *GitSegment) Name() string  { return "git" }
 func (g *GitSegment) Enabled() bool {
     cmd := exec.Command("git", "rev-parse", "--is-inside-work-tree")
     return cmd.Run() == nil
 }
 
-func (g *GitSegment) Render() (string, error) {
+func (g *GitSegment) Output() (SegmentOutput, error) {
     branch, err := runCmd("git", "rev-parse", "--abbrev-ref", "HEAD")
     if err != nil {
-        return "", err
+        return SegmentOutput{}, err
     }
     branch = strings.TrimSpace(branch)
 
     status, err := runCmd("git", "status", "--porcelain")
     if err != nil {
-        return "", err
+        return SegmentOutput{}, err
     }
-
     dirty := ""
     if len(strings.TrimSpace(status)) > 0 {
         dirty = "*"
     }
 
-    return fmt.Sprintf("%s%s%s%s ", colors.Yellow, branch, dirty, colors.Reset), nil
+    return SegmentOutput{
+        Name: "git",
+        Text: branch + dirty,
+    }, nil
 }
 
 func runCmd(name string, args ...string) (string, error) {
