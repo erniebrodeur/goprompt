@@ -1,5 +1,10 @@
 package segment
 
+import (
+	"fmt"
+	"strings"
+)
+
 type Segment interface {
     Name() string
     Enabled() bool
@@ -12,37 +17,77 @@ type Manager struct {
 }
 
 func (m *Manager) BuildPrompt(width int, displayWidth func(string) int) string {
-    leftStr := m.buildSide(m.LeftSegments)
-    rightStr := m.buildSide(m.RightSegments)
+    leftStr  := m.buildSideLeft(m.LeftSegments)
+    rightStr := m.buildSideRight(m.RightSegments)
 
-    leftLen := displayWidth(leftStr)
+    leftLen  := displayWidth(leftStr)
     rightLen := displayWidth(rightStr)
-
     gap := width - (leftLen + rightLen)
-    if gap < 1 {
-        gap = 1
+    if gap < 0 {
+        gap = 0
     }
 
-    return leftStr + makeSpaces(gap) + rightStr
+    // The filler: a "┤" plus a run of "─" dashes
+    filler := "┤" + strings.Repeat("─", gap)
+
+    // Combine them into the final single-line prompt
+    return leftStr + filler + rightStr
 }
 
-func (m *Manager) buildSide(segs []Segment) string {
+// buildSideLeft: handles your left segments
+func (m *Manager) buildSideLeft(segs []Segment) string {
     out := ""
-    for _, seg := range segs {
+    for i, seg := range segs {
         if seg.Enabled() {
             txt, err := seg.Render()
-            if err != nil {
-                // Skip if there's an error in the segment
-                continue
+            if err == nil && txt != "" {
+                switch i {
+                case 0:
+                    // The *first* left segment: "─┤ <txt> ├──"
+                    out += wrapSegmentLeftFirst(txt)
+                default:
+                    // Subsequent left segments: "┤ <txt> ├"
+                    out += wrapSegmentLeftNext(txt)
+                }
             }
-            out += txt
         }
     }
     return out
 }
 
-func makeSpaces(n int) string {
-    // Simple approach: strings.Repeat
-    // But here is a direct snippet:
-    return string(make([]byte, n))
+// buildSideRight: handles your right segments
+func (m *Manager) buildSideRight(segs []Segment) string {
+    out := ""
+    for i, seg := range segs {
+        if seg.Enabled() {
+            txt, err := seg.Render()
+            if err == nil && txt != "" {
+                // If it's NOT the last one, or if you have multiple right segments:
+                // "┤ <txt> ├"
+                // If it's the final right segment: "┤ <txt> ├─"
+                if i == len(segs)-1 {
+                    out += wrapSegmentRightLast(txt)
+                } else {
+                    out += wrapSegmentRightMid(txt)
+                }
+            }
+        }
+    }
+    return out
+}
+
+func wrapSegmentLeftFirst(s string) string {
+    return fmt.Sprintf("─┤ %s ├──", s)
+}
+
+func wrapSegmentLeftNext(s string) string {
+    return fmt.Sprintf("┤ %s ├", s)
+}
+
+func wrapSegmentRightMid(s string) string {
+    return fmt.Sprintf("┤ %s ├", s)
+}
+
+func wrapSegmentRightLast(s string) string {
+    return fmt.Sprintf("┤ %s ├─", s)
 }

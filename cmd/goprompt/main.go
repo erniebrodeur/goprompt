@@ -23,11 +23,13 @@ func run() error {
 
     mgr := &segment.Manager{
         LeftSegments: []segment.Segment{
-            segment.NewUserSegment(),
+            // Add as many left segments as you want:
             segment.NewDirSegment(),
-            segment.NewGitSegment(),
+            segment.NewUserSegment(),
+            // e.g. segment.NewGitSegment(),
         },
         RightSegments: []segment.Segment{
+            // Put your right-side segments here:
             segment.NewTimeSegment(),
         },
     }
