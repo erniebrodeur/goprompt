@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/erniebrodeur/goprompt/internal/segment"
+	"github.com/erniebrodeur/goprompt/internal/term"
 )
 
 func main() {
@@ -13,6 +16,23 @@ func main() {
 }
 
 func run() error {
-    fmt.Println("Hello from goprompt!")
+    width, err := term.GetWidth()
+    if err != nil {
+        return fmt.Errorf("failed to get terminal width: %w", err)
+    }
+
+    mgr := &segment.Manager{
+        LeftSegments: []segment.Segment{
+            segment.NewUserSegment(),
+            segment.NewDirSegment(),
+            segment.NewGitSegment(),
+        },
+        RightSegments: []segment.Segment{
+            segment.NewTimeSegment(),
+        },
+    }
+
+    prompt := mgr.BuildPrompt(width, term.DisplayWidth)
+    fmt.Print(prompt)
     return nil
 }
