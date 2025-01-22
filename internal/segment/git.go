@@ -1,52 +1,61 @@
 package segment
 
 import (
-	"bytes"
-	"os/exec"
-	"strings"
-
 	"github.com/erniebrodeur/goprompt/internal/model"
+	"github.com/go-git/go-git/v5"
 )
 
+// GitSegment is a segment for displaying Git info.
 type GitSegment struct{}
 
+// NewGitSegment returns a new GitSegment.
 func NewGitSegment() *GitSegment {
-    return &GitSegment{}
+	return &GitSegment{}
 }
 
-func (g *GitSegment) Name() string  { return "git" }
+// Name identifies this segment by name.
+func (g *GitSegment) Name() string {
+	return "git"
+}
+
+// Enabled determines if we're in a Git repo.
 func (g *GitSegment) Enabled() bool {
-    cmd := exec.Command("git", "rev-parse", "--is-inside-work-tree")
-    return cmd.Run() == nil
+	_, err := git.PlainOpen(".")
+	return err == nil
 }
 
+// Output fetches the current branch and dirty status.
 func (g *GitSegment) Output() (model.SegmentOutput, error) {
-    branch, err := runCmd("git", "rev-parse", "--abbrev-ref", "HEAD")
-    if err != nil {
-        return model.SegmentOutput{}, err
-    }
-    branch = strings.TrimSpace(branch)
+	repo, err := git.PlainOpen(".")
+	if err != nil {
+		return model.SegmentOutput{}, err
+	}
+	headRef, err := repo.Head()
+	if err != nil {
+		return model.SegmentOutput{}, err
+	}
 
-    status, err := runCmd("git", "status", "--porcelain")
-    if err != nil {
-        return model.SegmentOutput{}, err
-    }
-    dirty := ""
-    if len(strings.TrimSpace(status)) > 0 {
-        dirty = "*"
-    }
+	branch := headRef.Name().Short() // e.g. "main" or "HEAD"
+	if !headRef.Name().IsBranch() {
+		branch = "(detached)"
+	}
 
-    return model.SegmentOutput{
-        Name: "git",
-        Text: branch + dirty,
-    }, nil
-}
+	wt, err := repo.Worktree()
+	if err != nil {
+		return model.SegmentOutput{}, err
+	}
+	status, err := wt.Status()
+	if err != nil {
+		return model.SegmentOutput{}, err
+	}
 
-func runCmd(name string, args ...string) (string, error) {
-    var out bytes.Buffer
-    cmd := exec.Command(name, args...)
-    cmd.Stdout = &out
-    cmd.Stderr = &out
-    err := cmd.Run()
-    return out.String(), err
+	dirty := ""
+	if !status.IsClean() {
+		dirty = "*"
+	}
+
+	return model.SegmentOutput{
+		Name: "git",
+		Text: branch + dirty,
+	}, nil
 }
