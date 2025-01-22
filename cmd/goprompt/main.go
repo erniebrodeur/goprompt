@@ -10,32 +10,32 @@ import (
 )
 
 func main() {
-    if err := run(); err != nil {
-        fmt.Fprintln(os.Stderr, "Error:", err)
-        os.Exit(1)
-    }
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 }
 
 func run() error {
-    width, err := term.GetWidth()
-    if err != nil {
-        return err
-    }
+	width, err := term.GetWidth()
+	if err != nil {
+		return err
+	}
 
-    // Ensure we assign a real Theme so it's never nil.
-    mgr := &segment.Manager{
-        LeftSegments: []segment.Segment{
-            segment.NewDirSegment(),
-            segment.NewUserSegment(),
-            // segment.NewGitSegment(), etc. if needed
-        },
-        RightSegments: []segment.Segment{
-            segment.NewTimeSegment(),
-        },
-        Theme: theme.DefaultTheme{}, // ← The crucial fix!
-    }
+	// Create a Manager that has some segments on the left and right
+	mgr := &segment.Manager{
+		LeftSegments: []segment.Segment{
+			segment.NewDirSegment(),
+			segment.NewUserSegment(),
+			// segment.NewGitSegment(), etc.
+		},
+		RightSegments: []segment.Segment{
+			// segment.NewTimeSegment(),
+		},
+		Theme: theme.NewDefaultTheme(),
+	}
 
-    prompt := mgr.BuildPrompt(width, term.DisplayWidth)
-    fmt.Print(prompt)
-    return nil
+	prompt := mgr.BuildPrompt(width, term.DisplayWidth)
+	fmt.Print(prompt)
+	return nil
 }

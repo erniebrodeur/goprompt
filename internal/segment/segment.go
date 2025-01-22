@@ -5,19 +5,12 @@ import (
 	"strings"
 
 	"github.com/erniebrodeur/goprompt/internal/model"
-	"github.com/erniebrodeur/goprompt/internal/theme"
 )
 
 type Segment interface {
     Name() string
     Enabled() bool
     Output() (model.SegmentOutput, error)
-}
-
-type Manager struct {
-    LeftSegments  []Segment
-    RightSegments []Segment
-    Theme         theme.Theme
 }
 
 func (m *Manager) BuildPrompt(width int, displayWidth func(string) int) string {

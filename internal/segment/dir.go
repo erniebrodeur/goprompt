@@ -1,69 +1,45 @@
 package segment
 
 import (
-	"os"
-	"os/user"
 	"path/filepath"
 	"strings"
 
 	"github.com/erniebrodeur/goprompt/internal/model"
 )
 
-// DirSegment is responsible for returning a shortened current directory path.
+// DirSegment returns a shortened path (e.g., ".../Projects/goprompt").
 type DirSegment struct{}
 
 func NewDirSegment() *DirSegment {
 	return &DirSegment{}
 }
 
-func (d *DirSegment) Name() string { 
+func (d *DirSegment) Name() string {
 	return "directory"
 }
 
-// Always enabled, since we can always get a directory (unless there's an error).
-func (d *DirSegment) Enabled() bool {
+// Enabled always returns true for the directory segment; you can customize if needed.
+func (d *DirSegment) Enabled(ctx *Context) bool {
 	return true
 }
 
-// Output returns a short path. Example: 
-//   /Users/you/Projects/goprompt -> ".../Projects/goprompt"
-//   /home/username -> "~"
-//   If there's only one or two segments, "..." won't be prepended.
-func (d *DirSegment) Output() (model.SegmentOutput, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return model.SegmentOutput{}, err
-	}
-
-	shortened := shortenPath(cwd)
-
+// Output shortens the path from ctx.Pwd (rather than calling os.Getwd() again).
+func (d *DirSegment) Output(ctx *Context) (model.SegmentOutput, error) {
+	shortened := shortenPath(ctx.Pwd)
 	return model.SegmentOutput{
 		Name: "directory",
 		Text: shortened,
 	}, nil
 }
 
-// shortenPath converts an absolute path to a more compact version:
-//   "/Users/you/Projects/goprompt" -> "~" or "~/<dir>" or ".../<last2segments>"
+// shortenPath collapses the path to ".../<lastTwo>" if there are 3+ parts,
+// or leaves it as-is if there's only 1-2 parts.
 func shortenPath(full string) string {
-	// Replace home dir with '~' if possible.
-	usr, _ := user.Current()
-	home := ""
-	if usr != nil {
-		home = usr.HomeDir
-	}
-	if home != "" && strings.HasPrefix(full, home) {
-		full = "~" + strings.TrimPrefix(full, home)
-	}
-
-	// Split on the file separator.
-	parts := strings.Split(full, string(os.PathSeparator))
-	// If we have fewer than 3 parts (e.g., "~" or "~/<dir>"), just return as-is.
+	parts := strings.Split(full, string(filepath.Separator))
 	if len(parts) < 3 {
 		return full
 	}
 
-	// Rejoin the last two parts, prepend ".../" to indicate it's shortened.
 	lastTwo := filepath.Join(parts[len(parts)-2], parts[len(parts)-1])
 	return ".../" + lastTwo
 }

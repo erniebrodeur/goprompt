@@ -3,40 +3,46 @@ package segment
 import (
 	"os"
 	"os/user"
+	"strings"
 
 	"github.com/erniebrodeur/goprompt/internal/model"
 )
 
-type UserSegment struct {
-    u *user.User
-}
+// UserSegment shows the current username, and marks root differently if needed.
+type UserSegment struct{}
 
 func NewUserSegment() *UserSegment {
-    usr, _ := user.Current()
-    return &UserSegment{u: usr}
+	return &UserSegment{}
 }
 
-func (u *UserSegment) Name() string  { return "user" }
-func (u *UserSegment) Enabled() bool { return true }
+func (u *UserSegment) Name() string {
+	return "user"
+}
 
-func (u *UserSegment) Output() (model.SegmentOutput, error) {
-    if u.u == nil {
-        return model.SegmentOutput{}, nil
-    }
+// Enabled always returns true here. If you only want to show the user segment
+// in certain contexts, you could check ctx.IsSSH, etc.
+func (u *UserSegment) Enabled(ctx *Context) bool {
+	return true
+}
 
-    username := u.u.Username
-    isRoot := (os.Geteuid() == 0)
-    isSSH := false
-    if os.Getenv("SSH_CONNECTION") != "" {
-        isSSH = true
-        host, _ := os.Hostname()
-        username = username + "@" + host
-    }
+// Output returns the username; sets IsRoot if necessary.
+func (u *UserSegment) Output(ctx *Context) (model.SegmentOutput, error) {
+	username := "unknown"
+	if usr, err := user.Current(); err == nil {
+		// Some shells pass "USER", fallback to that if needed
+		username = usr.Username
+	} else if envUser := os.Getenv("USER"); envUser != "" {
+		username = envUser
+	}
 
-    return model.SegmentOutput{
-        Name:   "user",
-        Text:   username,
-        IsRoot: isRoot,
-        IsSSH:  isSSH,
-    }, nil
+	// Clean up domain parts if on Windows or domain\user format
+	if idx := strings.IndexRune(username, '\\'); idx != -1 {
+		username = username[idx+1:]
+	}
+
+	return model.SegmentOutput{
+		Name:   "user",
+		Text:   username,
+		IsRoot: ctx.IsRoot,
+	}, nil
 }

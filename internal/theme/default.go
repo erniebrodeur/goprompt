@@ -5,39 +5,47 @@ import (
 	"github.com/muesli/termenv"
 )
 
-// DefaultTheme uses termenv for 24-bit color
-type DefaultTheme struct{}
+// DefaultTheme uses termenv for 24-bit (or best available) color.
+type DefaultTheme struct {
+	profile termenv.Profile
+}
 
-// Colorize applies different colors based on segment name or flags (e.g., IsRoot).
-func (d DefaultTheme) Colorize(segData model.SegmentOutput) string {
-    // Determine terminal color profile once
-    p := termenv.ColorProfile()
+// NewDefaultTheme creates a DefaultTheme, storing a single color profile.
+func NewDefaultTheme() *DefaultTheme {
+	return &DefaultTheme{
+		profile: termenv.EnvColorProfile(), // Detect once
+	}
+}
 
-    // Base text
-    styled := termenv.String(segData.Text)
+// Colorize decides which color to apply based on segment name and flags.
+func (d *DefaultTheme) Colorize(segData model.SegmentOutput) string {
+	switch segData.Name {
+	case "directory":
+		// Example: bright blue
+		style := termenv.Style{}.Foreground(d.profile.Color("#005fff"))
+		return style.Styled(segData.Text)
 
-    switch segData.Name {
-    case "directory":
-        // Example: bright blue
-        styled = styled.Foreground(p.Color("#005fff"))
+	case "user":
+		// Red for root, green for normal user
+		if segData.IsRoot {
+			style := termenv.Style{}.Foreground(d.profile.Color("#ff0000"))
+			return style.Styled(segData.Text)
+		}
+		style := termenv.Style{}.Foreground(d.profile.Color("#00ff00"))
+		return style.Styled(segData.Text)
 
-    case "user":
-        if segData.IsRoot {
-            styled = styled.Foreground(p.Color("#ff0000")) // bright red for root
-        } else {
-            styled = styled.Foreground(p.Color("#00ff00")) // green for normal user
-        }
+	case "time":
+		// Cyan
+		style := termenv.Style{}.Foreground(d.profile.Color("#00ffff"))
+		return style.Styled(segData.Text)
 
-    case "time":
-        styled = styled.Foreground(p.Color("#00ffff")) // cyan
+	case "git":
+		// Yellow
+		style := termenv.Style{}.Foreground(d.profile.Color("#ffff00"))
+		return style.Styled(segData.Text)
 
-    case "git":
-        styled = styled.Foreground(p.Color("#ffff00")) // yellow
-
-    // Add other segments or defaults as needed
-    default:
-        // No special color
-    }
-
-    return styled.String()
+	default:
+		// No color for unrecognized segment
+		return segData.Text
+	}
 }
