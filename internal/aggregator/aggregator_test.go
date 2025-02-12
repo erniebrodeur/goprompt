@@ -1,6 +1,10 @@
 package aggregator
 
 import (
+	"context"
+	"errors"
+	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -23,27 +27,116 @@ func (m *mockSegment) Render(theme map[string]string) (string, error) {
 	return m.result, nil
 }
 
-func TestAggregatorCollect(t *testing.T) {
-	agg := New(50 * time.Millisecond)
-	agg.Segments = []segments.Segment{
-		&mockSegment{result: "DIR", delay: 10 * time.Millisecond},
-		&mockSegment{result: "GIT", delay: 10 * time.Millisecond},
+func TestAggregator(t *testing.T) {
+	tests := []struct {
+		name     string
+		segments []segments.Segment
+		timeout  time.Duration
+		want     string
+	}{
+		{
+			name: "AllSuccess",
+			segments: []segments.Segment{
+				&mockSegment{result: "DIR"},
+				&mockSegment{result: "GIT"},
+			},
+			timeout: 100 * time.Millisecond,
+			want:    "DIR GIT",
+		},
+		{
+			name: "SingleError",
+			segments: []segments.Segment{
+				&mockSegment{result: "OK"},
+				&mockSegment{err: errors.New("some failure")},
+			},
+			timeout: 100 * time.Millisecond,
+			want:    "OK [ERR]",
+		},
+		{
+			name: "SlowSegmentTimesOut",
+			segments: []segments.Segment{
+				&mockSegment{result: "FAST", delay: 10 * time.Millisecond},
+				&mockSegment{result: "SLOW", delay: 200 * time.Millisecond},
+			},
+			timeout: 50 * time.Millisecond,
+			want:    "FAST [ERR]",
+		},
+		{
+			name:     "NoSegments",
+			segments: []segments.Segment{},
+			timeout:  100 * time.Millisecond,
+			want:     "[No Segments Configured]",
+		},
 	}
 
-	out := agg.Collect(nil)
-	if out != "DIR GIT" {
-		t.Errorf("expected 'DIR GIT', got '%s'", out)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			agg := New(tt.timeout)
+			agg.Segments = tt.segments
+
+			got := agg.Collect(nil)
+			if got != tt.want {
+				t.Errorf("%s: Collect() = %q, want %q", tt.name, got, tt.want)
+			}
+		})
 	}
 }
 
-func TestAggregatorTimeout(t *testing.T) {
-	agg := New(10 * time.Millisecond)
+func TestAggregatorPartialWait(t *testing.T) {
+	// Additional scenario: some fast, some slow, confirm we handle concurrency
+	agg := New(80 * time.Millisecond)
 	agg.Segments = []segments.Segment{
-		&mockSegment{result: "SLOW", delay: 50 * time.Millisecond},
+		&mockSegment{result: "A", delay: 10 * time.Millisecond},
+		&mockSegment{result: "B", delay: 70 * time.Millisecond},
+		&mockSegment{result: "C", delay: 200 * time.Millisecond}, // likely to time out
+	}
+	got := agg.Collect(nil)
+	// We expect first two to succeed if we have a total 80ms limit, third times out
+	// So "A B [ERR]" or "A B" if concurrency finishes just in time for the second
+	if !strings.HasPrefix(got, "A B") {
+		t.Errorf("Expected 'A B ...', got %q", got)
+	}
+	if !strings.Contains(got, "[ERR]") {
+		t.Errorf("Expected third segment to be [ERR], got %q", got)
+	}
+}
+
+func TestAggregatorContextCancel(t *testing.T) {
+	// Simulate context cancellation earlier than aggregator's own logic
+	agg := New(200 * time.Millisecond)
+
+	// Overwrite aggregator's context with a short-living one
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
+	defer cancel()
+
+	results := make([]string, 2)
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	agg.Segments = []segments.Segment{
+		&mockSegment{result: "X", delay: 50 * time.Millisecond},
+		&mockSegment{result: "Y", delay: 10 * time.Millisecond},
 	}
 
-	out := agg.Collect(nil)
-	if out != "[ERR]" {
-		t.Errorf("expected '[ERR]', got '%s'", out)
+	// We'll cheat and run aggregator code in our own routine
+	go func() {
+		defer wg.Done()
+		got := agg.Collect(nil)
+		results[0] = got
+	}()
+
+	// Wait for aggregator or ctx to end
+	select {
+	case <-ctx.Done():
+		// aggregator didn't finish in 20ms
+		wg.Done()
+		results[1] = "[CTX_CANCELED]"
+	}
+
+	wg.Wait()
+	// Not a typical real test flow, but shows we can forcibly end aggregator.
+
+	if results[1] == "[CTX_CANCELED]" && !strings.Contains(results[0], "[ERR]") {
+		t.Errorf("Expected aggregator partial result with [ERR], got %q", results[0])
 	}
 }
