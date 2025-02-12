@@ -12,7 +12,7 @@ type GitSegment struct {
 func (g *GitSegment) Render(theme map[string]string) (string, error) {
 	repo, err := gogit.PlainOpen(".")
 	if err != nil {
-		// Not a git repo => no error, return empty
+		// Not a git repo => empty output
 		return "", nil
 	}
 	head, err := repo.Head()
@@ -24,7 +24,6 @@ func (g *GitSegment) Render(theme map[string]string) (string, error) {
 	if branchName == "" {
 		return "[ERR]", errors.New("detached HEAD or unknown branch")
 	}
-	// Possibly check if there's a dirty state, but skipping for brevity
+	// Could check dirty state, skipping for brevity
 	return branchName, nil
 }
-

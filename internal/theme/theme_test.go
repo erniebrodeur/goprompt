@@ -27,7 +27,6 @@ func TestHexToANSI(t *testing.T) {
 }
 
 func TestParseHexColor(t *testing.T) {
-	// We'll do a quick partial check for each color
 	s1 := theme.HexToANSI("#A6E22E")
 	if !strings.Contains(s1, "166;226;46m") {
 		t.Errorf("Expected #A6E22E => 166;226;46, got %q", s1)

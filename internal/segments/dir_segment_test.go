@@ -28,12 +28,10 @@ func TestDirSegment(t *testing.T) {
 }
 
 func TestDirSegmentError(t *testing.T) {
-	// Hard to force an os.Getwd error in normal usage, so we won't do a full injection approach here.
-	// We'll do a quick check: if normal usage is run, we don't get [ERR].
+	// Hard to force an os.Getwd error in normal usage, so no real injection approach here.
 	d := &segments.DirSegment{}
 	out, err := d.Render(nil)
 	if out == "[ERR]" || err != nil {
 		t.Errorf("Expected normal directory output, got %q (err=%v)", out, err)
 	}
 }
-

@@ -39,10 +39,9 @@ func TestGitSegmentRepo(t *testing.T) {
 
 	gs := &segments.GitSegment{}
 	out, err2 := gs.Render(nil)
-	// HEAD is probably detached (no commits). We'll see if it returns [ERR] or something else
-	// as long as it doesn't crash, we're good. Could specifically check for [ERR].
+	// HEAD is probably detached (no commits). We might get [ERR].
+	// As long as it doesn't crash, we're good.
 	if err2 != nil && out != "[ERR]" {
-		t.Errorf("If HEAD is detached, might expect [ERR], got %q (err=%v)", out, err2)
+		t.Errorf("Expected [ERR] or no crash, got %q (err=%v)", out, err2)
 	}
 }
-

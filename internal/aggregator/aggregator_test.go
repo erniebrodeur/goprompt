@@ -132,4 +132,3 @@ func TestAggregatorContextCancel(t *testing.T) {
 		t.Errorf("Expected aggregator partial result with [ERR], got %q", results[0])
 	}
 }
-

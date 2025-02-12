@@ -22,17 +22,15 @@ func (d *DirSegment) Render(theme map[string]string) (string, error) {
 	dir := strings.Join(comps, "/")
 
 	// Minimal color approach
-	colorKey := "dir.normal"
 	if theme != nil {
-		hexColor, ok := theme[colorKey]
-		if !ok {
-			hexColor = "#FFFFFF"
+		if hexColor, ok := theme["dir.normal"]; ok {
+			// In reality, parse hexColor => r,g,b => build ANSI
+			// We'll do a placeholder:
+			ansi := "\033[38;2;255;255;255m"
+			dir = ansi + dir + "\033[0m"
+			_ = hexColor
 		}
-		ansi := fmt.Sprintf("\033[38;2;255;255;255m") // fallback
-		// In reality, parse hexColor => r,g,b -> build ansi code
-		dir = ansi + dir + "\033[0m"
 	}
 
 	return dir, nil
 }
-

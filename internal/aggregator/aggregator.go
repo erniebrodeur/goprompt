@@ -67,4 +67,3 @@ func (a *Aggregator) Collect(themeMap map[string]string) string {
 
 	return strings.Join(results, " ")
 }
-
