@@ -1,7 +1,6 @@
 package segments
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
@@ -21,16 +20,7 @@ func (d *DirSegment) Render(theme map[string]string) (string, error) {
 	}
 	dir := strings.Join(comps, "/")
 
-	// Minimal color approach
-	// If you want real theming, parse the hex color, build an ANSI code, etc.
-	if theme != nil {
-		if hexColor, ok := theme["dir.normal"]; ok {
-			ansi := "\033[38;2;255;255;255m" // Pretend parse
-			_ = hexColor
-			dir = ansi + dir + "\033[0m"
-		}
-	}
-
+	// If you want to do theming, parse hex here.
+	// For now, just returning the directory name:
 	return dir, nil
 }
-
