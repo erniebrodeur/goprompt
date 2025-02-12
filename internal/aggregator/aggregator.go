@@ -20,8 +20,8 @@ func New(timeout time.Duration) *Aggregator {
 	}
 }
 
-// Collect runs each Segment in parallel under a short timeout,
-// returning a single prompt string.
+// Collect runs each Segment in parallel, under a short timeout,
+// then merges their outputs into a final prompt string.
 func (a *Aggregator) Collect(themeMap map[string]string) string {
 	if len(a.Segments) == 0 {
 		return "[No Segments Configured]"
@@ -55,9 +55,9 @@ func (a *Aggregator) Collect(themeMap map[string]string) string {
 
 	select {
 	case <-done:
-		// All segments finished in time
+		// All segments finished within the timeout
 	case <-ctx.Done():
-		// Timeout, mark unfinished segments as [ERR]
+		// Timeout, mark any unfinished as [ERR]
 		for i, v := range results {
 			if v == "" {
 				results[i] = "[ERR]"
@@ -67,3 +67,4 @@ func (a *Aggregator) Collect(themeMap map[string]string) string {
 
 	return strings.Join(results, " ")
 }
+

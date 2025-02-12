@@ -7,7 +7,6 @@ import (
 )
 
 type DirSegment struct {
-	// Possibly store any config, e.g. how many path components to show
 	ShowComponents int
 }
 
@@ -22,14 +21,18 @@ func (d *DirSegment) Render(theme map[string]string) (string, error) {
 	}
 	dir := strings.Join(comps, "/")
 
-	// If theme is set, color it:
+	// Minimal color approach
 	colorKey := "dir.normal"
-	hexColor, ok := theme[colorKey]
-	if !ok {
-		hexColor = "#FFFFFF" // fallback
+	if theme != nil {
+		hexColor, ok := theme[colorKey]
+		if !ok {
+			hexColor = "#FFFFFF"
+		}
+		ansi := fmt.Sprintf("\033[38;2;255;255;255m") // fallback
+		// In reality, parse hexColor => r,g,b -> build ansi code
+		dir = ansi + dir + "\033[0m"
 	}
-	colorPrefix := fmt.Sprintf("\033[38;2;%s;%s;%sm", "255", "255", "255") // TODO parse hexColor properly
 
-	// Minimal version - parseHexColor is in theme package, we skip for brevity
-	return colorPrefix + dir + "\033[0m", nil
+	return dir, nil
 }
+

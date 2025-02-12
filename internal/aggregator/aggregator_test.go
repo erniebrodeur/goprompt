@@ -83,16 +83,13 @@ func TestAggregator(t *testing.T) {
 }
 
 func TestAggregatorPartialWait(t *testing.T) {
-	// Additional scenario: some fast, some slow, confirm we handle concurrency
 	agg := New(80 * time.Millisecond)
 	agg.Segments = []segments.Segment{
 		&mockSegment{result: "A", delay: 10 * time.Millisecond},
 		&mockSegment{result: "B", delay: 70 * time.Millisecond},
-		&mockSegment{result: "C", delay: 200 * time.Millisecond}, // likely to time out
+		&mockSegment{result: "C", delay: 200 * time.Millisecond},
 	}
 	got := agg.Collect(nil)
-	// We expect first two to succeed if we have a total 80ms limit, third times out
-	// So "A B [ERR]" or "A B" if concurrency finishes just in time for the second
 	if !strings.HasPrefix(got, "A B") {
 		t.Errorf("Expected 'A B ...', got %q", got)
 	}
@@ -102,10 +99,8 @@ func TestAggregatorPartialWait(t *testing.T) {
 }
 
 func TestAggregatorContextCancel(t *testing.T) {
-	// Simulate context cancellation earlier than aggregator's own logic
 	agg := New(200 * time.Millisecond)
 
-	// Overwrite aggregator's context with a short-living one
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
 	defer cancel()
 
@@ -118,14 +113,12 @@ func TestAggregatorContextCancel(t *testing.T) {
 		&mockSegment{result: "Y", delay: 10 * time.Millisecond},
 	}
 
-	// We'll cheat and run aggregator code in our own routine
 	go func() {
 		defer wg.Done()
 		got := agg.Collect(nil)
 		results[0] = got
 	}()
 
-	// Wait for aggregator or ctx to end
 	select {
 	case <-ctx.Done():
 		// aggregator didn't finish in 20ms
@@ -134,9 +127,9 @@ func TestAggregatorContextCancel(t *testing.T) {
 	}
 
 	wg.Wait()
-	// Not a typical real test flow, but shows we can forcibly end aggregator.
 
 	if results[1] == "[CTX_CANCELED]" && !strings.Contains(results[0], "[ERR]") {
 		t.Errorf("Expected aggregator partial result with [ERR], got %q", results[0])
 	}
 }
+

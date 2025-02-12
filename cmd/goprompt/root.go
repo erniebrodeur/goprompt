@@ -12,8 +12,8 @@ var rootCmd = &cobra.Command{
 	Short: "GoPrompt is a customizable parallel prompt generator",
 	Long:  `GoPrompt builds a prompt by running multiple segments in parallel, with a short timeout for each.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// If no subcommand is specified, default to "render" logic or similar
-		fmt.Println("[rootCmd] Defaulting to aggregator-based render. (TODO)")
+		// If no subcommand is specified, default to "render" or placeholder logic:
+		fmt.Println("[rootCmd] Defaulting to aggregator-based render. (TODO: Implement aggregator call)")
 	},
 }
 
@@ -25,8 +25,12 @@ func Execute() {
 }
 
 func init() {
-	// Typically add subcommands here, e.g.:
+	// Example: if you add a "render" subcommand, you'd do:
 	// rootCmd.AddCommand(renderCmd)
-	// rootCmd.AddCommand(themeCmd)
-	// etc.
 }
+
+// Optional helper to expose the root cmd for tests:
+func GetRootCmd() *cobra.Command {
+	return rootCmd
+}
+

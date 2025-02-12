@@ -18,8 +18,7 @@ func executeCommand(cmd *cobra.Command, args ...string) (string, error) {
 }
 
 func TestRootNoArgs(t *testing.T) {
-	// We'll assume root command prints something like a placeholder aggregator message
-	rootCmd := getRootCmd()
+	rootCmd := goprompt.GetRootCmd()
 	output, err := executeCommand(rootCmd)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -29,7 +28,3 @@ func TestRootNoArgs(t *testing.T) {
 	}
 }
 
-// If rootCmd is unexported, we'd wrap it in a helper function:
-func getRootCmd() *cobra.Command {
-	return goprompt.GetRootCmd()
-}

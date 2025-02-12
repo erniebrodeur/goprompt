@@ -28,19 +28,12 @@ func TestDirSegment(t *testing.T) {
 }
 
 func TestDirSegmentError(t *testing.T) {
-	// If we can't get wd for some reason, it's rare, but let's mock it
-	// We'll skip advanced mocking. Just set an impossible path or so.
-	// In practice, we can't easily force os.Getwd() to fail. We'll simulate the code
-	// by modifying DirSegment in a test version if needed. For demonstration only:
-
+	// Hard to force an os.Getwd error in normal usage, so we won't do a full injection approach here.
+	// We'll do a quick check: if normal usage is run, we don't get [ERR].
 	d := &segments.DirSegment{}
-	// Pretend there's an error from getwd:
-	// We'll skip the actual forced error scenario for now, but if we had a specialized
-	// version of DirSegment that took a func for getwd, we could force an error.
-
-	// Checking normal path, expect no error
 	out, err := d.Render(nil)
 	if out == "[ERR]" || err != nil {
 		t.Errorf("Expected normal directory output, got %q (err=%v)", out, err)
 	}
 }
+

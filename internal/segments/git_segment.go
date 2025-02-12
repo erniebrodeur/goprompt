@@ -7,27 +7,24 @@ import (
 )
 
 type GitSegment struct {
-	// Possibly store states like isDirty, branchName, etc.
 }
 
 func (g *GitSegment) Render(theme map[string]string) (string, error) {
-	// Minimal example: try to open local git repo
 	repo, err := gogit.PlainOpen(".")
 	if err != nil {
-		// Not a repo => return empty, not an error
+		// Not a git repo => no error, return empty
 		return "", nil
 	}
 	head, err := repo.Head()
 	if err != nil {
 		return "[ERR]", err
 	}
+
 	branchName := head.Name().Short()
-
-	// Fake "dirty" check if needed (skipped for brevity)
-	// If we can't detect properly, let's just say no error
-
 	if branchName == "" {
-		return "[ERR]", errors.New("detached or unknown branch")
+		return "[ERR]", errors.New("detached HEAD or unknown branch")
 	}
+	// Possibly check if there's a dirty state, but skipping for brevity
 	return branchName, nil
 }
+
