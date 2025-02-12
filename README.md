@@ -1,14 +1,14 @@
 # GoPrompt
 
-GoPrompt is a CLI tool for building a **customizable shell prompt** using a set of small, parallel “segments.” Whenever you open or refresh your shell, GoPrompt runs each segment (like Git branch detection or directory info) in parallel with a short timeout. This design ensures your prompt remains responsive even if a particular segment (for example, a Git check on a large repository) takes too long. The tool is written in Go, so it compiles to a single, lightweight binary without extra dependencies.
+GoPrompt is a CLI tool designed to create **customizable shell prompts** using small, parallel segments. When your shell opens or refreshes, GoPrompt executes each segment (like Git branch detection or directory information) concurrently with a short timeout. This ensures your prompt remains responsive, even if a segment (such as a Git check in a large repository) takes longer than expected. Written in Go, it compiles into a single, lightweight binary without external dependencies.
 
 ## Why Use GoPrompt?
 
-Many shell prompts either rely on shell scripts that can block your prompt if something takes a while (like querying Git status in a large repo) or require complex setups. GoPrompt avoids these pitfalls by leveraging Go’s concurrency. Each segment has about 100ms to produce an output; if it fails or times out, GoPrompt simply omits that segment instead of slowing you down.
+Traditional shell prompts often rely on shell scripts that can block the prompt while waiting for slow operations (like Git status checks). GoPrompt avoids these issues by using Go's concurrency features. Each segment has a limited time (approximately 100ms) to produce output. If a segment fails or times out, GoPrompt omits it, preventing slowdowns.
 
 ## Installation
 
-To install GoPrompt, first ensure you have Go installed and set up on your system. Then clone this repository and build:
+To install GoPrompt, ensure you have Go installed and configured. Then:
 
 ```bash
 git clone https://github.com/your-username/go-prompt.git
@@ -56,6 +56,7 @@ GoPrompt uses two environment variables to determine how the prompt looks:
 
 - `GOTHEME` — Controls color schemes (e.g., `monokai_dark`, `solarized_light`, etc.).
 - `GOLAYOUT` — Defines the arrangement of segments, for example:
+
   ```text
   "┌ $dir(2) on $git\n└─ $ "
   ```
