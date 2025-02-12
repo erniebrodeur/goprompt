@@ -17,10 +17,11 @@ func HexToANSI(hex string) string {
 	return fmt.Sprintf("\033[38;2;%d;%d;%dm", r, g, b)
 }
 
-// Example map
+// Example theme map if needed
 var MonokaiDark = map[string]string{
 	"dir.normal": "#FD971F",
 	"git.clean":  "#A6E22E",
 	"git.dirty":  "#F92672",
 }
 
+---

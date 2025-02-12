@@ -7,31 +7,30 @@ import (
 	"testing"
 
 	"github.com/erniebrodeur/goprompt/internal/segments"
+	"github.com/stretchr/testify/require"
 )
 
-func TestDirSegment(t *testing.T) {
+func TestDirSegment_Normal(t *testing.T) {
 	origWD, _ := os.Getwd()
 	defer os.Chdir(origWD)
 
-	tempDir := t.TempDir()
-	os.Chdir(tempDir)
+	tmp := t.TempDir()
+	require.NoError(t, os.Chdir(tmp))
 
 	d := &segments.DirSegment{ShowComponents: 1}
 	out, err := d.Render(map[string]string{"dir.normal": "#FD971F"})
-	if err != nil {
-		t.Fatalf("Render returned error: %v", err)
-	}
-	want := filepath.Base(tempDir)
-	if !strings.Contains(out, want) {
-		t.Errorf("Expected DirSegment output to contain %q, got %q", want, out)
-	}
+	require.NoError(t, err)
+	require.NotEmpty(t, out)
+
+	want := filepath.Base(tmp)
+	require.Contains(t, out, want, "Expected last path component in dir output")
 }
 
-func TestDirSegmentError(t *testing.T) {
+func TestDirSegment_Error(t *testing.T) {
 	d := &segments.DirSegment{}
 	out, err := d.Render(nil)
-	if out == "[ERR]" || err != nil {
-		t.Errorf("Expected normal directory output, got %q (err=%v)", out, err)
-	}
+	require.NoError(t, err)
+	require.NotEqual(t, "[ERR]", out, "Should not produce [ERR] in a normal scenario")
 }
 
+---

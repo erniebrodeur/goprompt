@@ -20,7 +20,8 @@ func (d *DirSegment) Render(theme map[string]string) (string, error) {
 	}
 	dir := strings.Join(comps, "/")
 
-	// If you want to do theming, parse hex here.
-	// For now, just returning the directory name:
+	// If theme is provided, we could parse "dir.normal" and build an ANSI code, skipping for brevity
 	return dir, nil
 }
+
+---

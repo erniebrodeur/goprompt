@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
-	// Import the main package path but rename to avoid direct conflicts
 	goprompt "github.com/erniebrodeur/goprompt/cmd/goprompt"
+	"github.com/stretchr/testify/require"
 )
 
 func executeCommand(cmd *cobra.Command, args ...string) (string, error) {
@@ -19,29 +19,17 @@ func executeCommand(cmd *cobra.Command, args ...string) (string, error) {
 }
 
 func TestRootNoArgs(t *testing.T) {
-	// We call a function from the 'main' package that returns the rootCmd
-	rootCmd := goprompt.GetRootCmd()
-
+	rootCmd := goprompt.GetRootCmd() // We'll define a getter in render.go or similar
 	out, err := executeCommand(rootCmd)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if !strings.Contains(out, "[rootCmd]") {
-		t.Errorf("expected root cmd placeholder, got %q", out)
-	}
+	require.NoError(t, err)
+	require.Contains(t, out, "[rootCmd]", "Expected placeholder mention in root command output")
 }
 
-// If you want to test 'render' subcommand:
 func TestRenderCmd(t *testing.T) {
 	rootCmd := goprompt.GetRootCmd()
 	out, err := executeCommand(rootCmd, "render")
-	if err != nil {
-		t.Fatalf("render cmd error: %v", err)
-	}
-	// The aggregator returns something like a dir + possibly empty Git
-	// We can do a minimal check:
-	if out == "" {
-		t.Errorf("render output empty, expected dir or partial prompt")
-	}
+	require.NoError(t, err)
+	require.NotEmpty(t, out, "render should produce some aggregator output (dir or empty git).")
 }
 
+---

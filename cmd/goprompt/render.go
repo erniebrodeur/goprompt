@@ -15,27 +15,20 @@ var (
 	layoutOverride string
 )
 
+// We'll define a subcommand that runs aggregator with a couple segments:
 var renderCmd = &cobra.Command{
 	Use:   "render",
 	Short: "Render the prompt with optional overrides",
-	Long: `render subcommand triggers the aggregator with minimal defaults.
-You could parse --theme or --layout flags to override environment-based defaults.`,
+	Long:  `Invokes the aggregator for a quick parallel prompt. If needed, you can pass --theme or --layout to override environment defaults.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// You might apply themeOverride or layoutOverride, but for now we’ll ignore them.
-
-		// Create aggregator with a 100ms timeout
 		agg := aggregator.New(100 * time.Millisecond)
-
-		// Add some example segments
 		agg.Segments = []segments.Segment{
 			&segments.DirSegment{ShowComponents: 1},
 			&segments.GitSegment{},
-			// Additional segments can be added here
 		}
 
-		// For theming, we might pass a real map from environment or override flags
-		finalOutput := agg.Collect(nil)
-		fmt.Println(finalOutput)
+		out := agg.Collect(nil) // ignoring themeMap for now
+		fmt.Println(out)
 	},
 }
 
@@ -44,3 +37,9 @@ func init() {
 	renderCmd.Flags().StringVarP(&layoutOverride, "layout", "", "", "Override layout for a single run")
 }
 
+// Getter for tests
+func GetRootCmd() *cobra.Command {
+	return rootCmd
+}
+
+---

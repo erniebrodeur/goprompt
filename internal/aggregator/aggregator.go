@@ -53,9 +53,8 @@ func (a *Aggregator) Collect(themeMap map[string]string) string {
 
 	select {
 	case <-done:
-		// All segments finished
 	case <-ctx.Done():
-		// Timeout => mark unfinished as [ERR]
+		// Mark unfinished
 		for i, val := range results {
 			if val == "" {
 				results[i] = "[ERR]"
@@ -66,3 +65,4 @@ func (a *Aggregator) Collect(themeMap map[string]string) string {
 	return strings.Join(results, " ")
 }
 
+---

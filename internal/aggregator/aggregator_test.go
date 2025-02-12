@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/erniebrodeur/goprompt/internal/segments"
+	"github.com/stretchr/testify/require"
 )
 
 type mockSegment struct {
@@ -17,7 +18,7 @@ type mockSegment struct {
 	err    error
 }
 
-func (m *mockSegment) Render(theme map[string]string) (string, error) {
+func (m *mockSegment) Render(_ map[string]string) (string, error) {
 	if m.delay > 0 {
 		time.Sleep(m.delay)
 	}
@@ -27,7 +28,7 @@ func (m *mockSegment) Render(theme map[string]string) (string, error) {
 	return m.result, nil
 }
 
-func TestAggregator(t *testing.T) {
+func TestAggregator_BasicScenarios(t *testing.T) {
 	tests := []struct {
 		name     string
 		segments []segments.Segment
@@ -53,7 +54,7 @@ func TestAggregator(t *testing.T) {
 			want:    "OK [ERR]",
 		},
 		{
-			name: "SlowSegmentTimesOut",
+			name: "SlowTimesOut",
 			segments: []segments.Segment{
 				&mockSegment{result: "FAST", delay: 10 * time.Millisecond},
 				&mockSegment{result: "SLOW", delay: 200 * time.Millisecond},
@@ -70,18 +71,21 @@ func TestAggregator(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			agg := New(tt.timeout)
 			agg.Segments = tt.segments
+
 			got := agg.Collect(nil)
-			if got != tt.want {
-				t.Errorf("%s: Collect() = %q, want %q", tt.name, got, tt.want)
-			}
+			require.Equal(t, tt.want, got, "Aggregator mismatch in %s", tt.name)
 		})
 	}
 }
 
-func TestAggregatorPartialWait(t *testing.T) {
+func TestAggregator_PartialWait(t *testing.T) {
+	t.Parallel()
 	agg := New(80 * time.Millisecond)
 	agg.Segments = []segments.Segment{
 		&mockSegment{result: "A", delay: 10 * time.Millisecond},
@@ -89,15 +93,12 @@ func TestAggregatorPartialWait(t *testing.T) {
 		&mockSegment{result: "C", delay: 200 * time.Millisecond},
 	}
 	got := agg.Collect(nil)
-	if !strings.HasPrefix(got, "A B") {
-		t.Errorf("Expected 'A B ...', got %q", got)
-	}
-	if !strings.Contains(got, "[ERR]") {
-		t.Errorf("Expected third segment to be [ERR], got %q", got)
-	}
+	require.True(t, strings.HasPrefix(got, "A B"), "Expected 'A B...' prefix, got %q", got)
+	require.Contains(t, got, "[ERR]", "Expected third segment to time out => [ERR]")
 }
 
-func TestAggregatorContextCancel(t *testing.T) {
+func TestAggregator_ContextCancel(t *testing.T) {
+	t.Parallel()
 	agg := New(200 * time.Millisecond)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
@@ -120,14 +121,16 @@ func TestAggregatorContextCancel(t *testing.T) {
 
 	select {
 	case <-ctx.Done():
-		// aggregator didn't finish in 20ms
+		// aggregator not finished
 		wg.Done()
 		results[1] = "[CTX_CANCELED]"
 	}
 
 	wg.Wait()
-	if results[1] == "[CTX_CANCELED]" && !strings.Contains(results[0], "[ERR]") {
-		t.Errorf("Expected aggregator partial result with [ERR], got %q", results[0])
+
+	if results[1] == "[CTX_CANCELED]" {
+		require.Contains(t, results[0], "[ERR]", "Aggregator partial result should have [ERR] if forcibly canceled")
 	}
 }
 
+---

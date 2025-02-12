@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/erniebrodeur/goprompt/internal/theme"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHexToANSI(t *testing.T) {
@@ -19,20 +20,18 @@ func TestHexToANSI(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := theme.HexToANSI(tt.hex)
-		if got != tt.want {
-			t.Errorf("HexToANSI(%q) = %q, want %q", tt.hex, got, tt.want)
-		}
+		tt := tt
+		t.Run(tt.hex, func(t *testing.T) {
+			got := theme.HexToANSI(tt.hex)
+			require.Equal(t, tt.want, got, "Mismatch for hex %s", tt.hex)
+		})
 	}
 }
 
 func TestParseHexColor(t *testing.T) {
 	s1 := theme.HexToANSI("#A6E22E")
-	if !strings.Contains(s1, "166;226;46m") {
-		t.Errorf("Expected #A6E22E => 166;226;46, got %q", s1)
-	}
+	require.Contains(t, s1, "166;226;46m", "Expected #A6E22E => 166;226;46")
+
 	s2 := theme.HexToANSI("#F92672")
-	if !strings.Contains(s2, "249;38;114m") {
-		t.Errorf("Expected #F92672 => 249;38;114, got %q", s2)
-	}
+	require.Contains(t, s2, "249;38;114m", "Expected #F92672 => 249;38;114")
 }

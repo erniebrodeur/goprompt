@@ -6,43 +6,38 @@ import (
 
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/erniebrodeur/goprompt/internal/segments"
+	"github.com/stretchr/testify/require"
 )
 
-func TestGitSegmentNonRepo(t *testing.T) {
+func TestGitSegment_NonRepo(t *testing.T) {
 	origWD, _ := os.Getwd()
 	defer os.Chdir(origWD)
 
 	tmp := t.TempDir()
-	os.Chdir(tmp)
+	require.NoError(t, os.Chdir(tmp))
 
 	gs := &segments.GitSegment{}
 	out, err := gs.Render(nil)
-	if err != nil {
-		t.Fatalf("Unexpected error in non-repo: %v", err)
-	}
-	if out != "" {
-		t.Errorf("Expected empty string for non-repo, got %q", out)
-	}
+	require.NoError(t, err)
+	require.Equal(t, "", out, "Non-repo => empty string")
 }
 
-func TestGitSegmentRepo(t *testing.T) {
+func TestGitSegment_RepoNoCommits(t *testing.T) {
 	origWD, _ := os.Getwd()
 	defer os.Chdir(origWD)
 
 	tmp := t.TempDir()
-	os.Chdir(tmp)
+	require.NoError(t, os.Chdir(tmp))
 
 	_, err := gogit.PlainInit(tmp, false)
-	if err != nil {
-		t.Fatalf("Failed to init repo: %v", err)
-	}
+	require.NoError(t, err)
 
 	gs := &segments.GitSegment{}
 	out, err2 := gs.Render(nil)
-	// HEAD is presumably empty => might be [ERR], or the segment might handle no commits differently
-	// As long as it doesn't crash, it's fine.
-	if err2 != nil && out != "[ERR]" {
-		t.Errorf("Expected [ERR] or no crash, got %q (err=%v)", out, err2)
+	// HEAD is presumably detached => might be [ERR]
+	if err2 != nil {
+		require.Equal(t, "[ERR]", out, "Detached HEAD => [ERR]")
 	}
 }
 
+---
