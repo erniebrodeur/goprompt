@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+// Entry point for DirSegment BDD tests
 func TestDirSegmentBDD(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Dir Segment BDD Suite")
