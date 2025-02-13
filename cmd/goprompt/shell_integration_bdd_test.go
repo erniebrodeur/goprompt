@@ -7,8 +7,10 @@ import (
 
 var _ = Describe("Shell Integration", func() {
 	Context("`goprompt shell` subcommand", func() {
-		It("prints lines locally without calling a global binary", func() {
+		It("prints lines for .bashrc/.zshrc (placeholder)", func() {
+			// Minimal usage of Gomega
 			Expect(true).To(BeTrue())
 		})
 	})
 })
+

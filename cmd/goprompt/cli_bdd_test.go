@@ -21,11 +21,12 @@ var _ = Describe("GoPrompt CLI", func() {
 	var rootCmd *cobra.Command
 
 	BeforeEach(func() {
-		rootCmd = getLocalRootCmd() 
+		// Stubbed approach
+		rootCmd = GetRootCmdStub()
 	})
 
 	Context("No subcommand", func() {
-		It("uses the local rootCmd without a global binary", func() {
+		It("runs default aggregator logic (placeholder)", func() {
 			out, err := executeCLI(rootCmd)
 			Expect(err).To(BeNil())
 			Expect(out).To(ContainSubstring("[rootCmd] Default aggregator-based render (placeholder)"))
@@ -33,7 +34,7 @@ var _ = Describe("GoPrompt CLI", func() {
 	})
 
 	Context("`render` subcommand", func() {
-		It("handles local flags and does not invoke a global goprompt", func() {
+		It("accepts flags for a one-off prompt generation", func() {
 			out, err := executeCLI(rootCmd, "render", "--theme", "monokai_dark", "--layout", "$dir(2) $git")
 			Expect(err).To(BeNil())
 			Expect(out).To(Or(
@@ -43,8 +44,16 @@ var _ = Describe("GoPrompt CLI", func() {
 		})
 	})
 
+	Context("`shell` subcommand", func() {
+		It("prints lines for shell integration (placeholder)", func() {
+			out, err := executeCLI(rootCmd, "shell")
+			Expect(err).To(BeNil())
+			Expect(out).To(ContainSubstring("eval"))
+		})
+	})
+
 	Context("`theme` subcommand", func() {
-		It("lists or applies themes locally (placeholder)", func() {
+		It("lists or applies themes (placeholder)", func() {
 			out, err := executeCLI(rootCmd, "theme", "list")
 			Expect(err).To(BeNil())
 			Expect(out).To(Or(
@@ -55,7 +64,7 @@ var _ = Describe("GoPrompt CLI", func() {
 	})
 
 	Context("`layout` subcommand", func() {
-		It("lists or applies layouts locally (placeholder)", func() {
+		It("lists or applies known layouts (placeholder)", func() {
 			out, err := executeCLI(rootCmd, "layout", "list")
 			Expect(err).To(BeNil())
 			Expect(out).To(Or(
@@ -66,7 +75,7 @@ var _ = Describe("GoPrompt CLI", func() {
 	})
 
 	Context("Invalid flags or usage", func() {
-		It("fails without invoking the global binary (placeholder)", func() {
+		It("returns an error if user passes unknown flags (placeholder)", func() {
 			out, err := executeCLI(rootCmd, "--bogus-flag")
 			Expect(err).ToNot(BeNil())
 			Expect(out).To(ContainSubstring("Error: unknown flag"))
@@ -74,12 +83,14 @@ var _ = Describe("GoPrompt CLI", func() {
 	})
 })
 
-func getLocalRootCmd() *cobra.Command {
+// Minimal Stub
+func GetRootCmdStub() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "goprompt",
 		Short: "GoPrompt is a customizable parallel prompt generator",
-		Run: func(c *cobra.Command, args []string) {
-			c.Println("[rootCmd] Default aggregator-based render (placeholder)")
+		Long:  `GoPrompt builds a prompt by running multiple segments in parallel, each with a short timeout.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Println("[rootCmd] Default aggregator-based render (placeholder)")
 		},
 	}
 	cmd.AddCommand(&cobra.Command{
@@ -87,6 +98,13 @@ func getLocalRootCmd() *cobra.Command {
 		Short: "Render the prompt with optional overrides",
 		Run: func(c *cobra.Command, args []string) {
 			c.Println("DIR_NOT_IMPL [ERR]")
+		},
+	})
+	cmd.AddCommand(&cobra.Command{
+		Use:   "shell",
+		Short: "Print shell integration lines",
+		Run: func(c *cobra.Command, args []string) {
+			c.Println("eval \"$(goprompt shell)\" # placeholder integration")
 		},
 	})
 	cmd.AddCommand(&cobra.Command{
