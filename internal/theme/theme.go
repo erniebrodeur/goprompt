@@ -4,4 +4,3 @@ func HexToANSI(hex string) string {
 	// Placeholder
 	return ""
 }
-

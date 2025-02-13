@@ -21,4 +21,3 @@ func (a *Aggregator) Collect(themeMap map[string]string) string {
 	// Placeholder implementation
 	return "NOT IMPLEMENTED"
 }
-
