@@ -6,15 +6,23 @@ import (
 )
 
 var _ = Describe("Layout Placeholders", func() {
-	Context("Invalid placeholders", func() {
-		It("either leaves them literal or handles them as errors", func() {
-			// Implementation detail for how we treat unknown placeholders
+	Context("Parsing and replacing placeholders", func() {
+		It("replaces $dir(2), $git, $user, $time, etc. with real segment outputs", func() {
+			// We'll eventually have a layout parser that calls aggregator with a list of segments
+			// This test will fail until we implement that logic
 		})
 	})
 
-	Context("Multiple placeholders with partial error", func() {
-		It("replaces only the failing segment with [ERR]", func() {
-			// Possibly tested by a mock aggregator if needed
+	Context("Invalid placeholders", func() {
+		It("leaves them literal or yields an error, based on design choice", func() {
+			// e.g., $whatever(??)
+		})
+	})
+
+	Context("Partial errors", func() {
+		It("only inserts [ERR] for the failing segment, leaves others intact", func() {
+			// aggregator concurrency logic merges results back into placeholders
 		})
 	})
 })
+
