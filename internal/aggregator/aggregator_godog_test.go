@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cucumber/godog"
-	"github.com/cucumber/godog/colors"
+	"github.com/cucumber/godog/v2"
+	"github.com/cucumber/godog/v2/colors"
 )
 
 var (
@@ -95,7 +95,7 @@ func theResultShouldBe(expected string) error {
 	return nil
 }
 
-func FeatureContext(s *godog.ScenarioContext) {
+func FeatureContext(s *godog.Suite) {
 	s.Step(`^I have segments \[(.+)\] (that succeed quickly|where "FailSegment" fails|that all fail|where "SlowSegment" is very slow)$`, iHaveSegments)
 	s.Step(`^I build the prompt with a (\d+)ms timeout$`, iBuildThePromptWithTimeout)
 	s.Step(`^the result should include "([^"]+)"$`, theResultShouldInclude)
@@ -103,17 +103,16 @@ func FeatureContext(s *godog.ScenarioContext) {
 }
 
 func TestMain(m *testing.M) {
-	suite := godog.TestSuite{
-		Name:                "aggregator_fallback",
-		ScenarioInitializer: FeatureContext,
-		Options: &godog.Options{
-			Output: colors.Colored(os.Stdout),
-			Paths:  []string{"aggregator_fallback.feature"},
-		},
+	opts := godog.Options{
+		Format: "pretty",
+		Output: colors.Colored(os.Stdout),
+		Paths:  []string{"aggregator_fallback.feature"},
 	}
-	if suite.Run() != 0 {
-		os.Exit(1)
+	status := godog.RunWithOptions("godogs", func(s *godog.Suite) {
+		FeatureContext(s)
+	}, opts)
+	if st := m.Run(); st > status {
+		status = st
 	}
-	code := m.Run()
-	os.Exit(code)
+	os.Exit(status)
 }
