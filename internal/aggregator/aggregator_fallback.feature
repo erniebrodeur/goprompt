@@ -1,6 +1,4 @@
 Feature: Aggregator fallback behavior
-  The aggregator merges multiple segments in parallel, handling failures or timeouts gracefully.
-
   @all_succeed
   Scenario: All segments succeed quickly
     Given I have segments ["DirSegment", "GitSegment"] that succeed quickly
