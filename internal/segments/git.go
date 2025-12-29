@@ -64,6 +64,8 @@ func (g *Git) parseGit() Git {
 	}
 
 	if strings.Contains(g.gitString, "No commits yet") {
+		g.branch = "No commits yet"
+		fmt.Printf(("no commits yet"))
 		return *g
 	}
 
