@@ -11,10 +11,6 @@ import (
 )
 
 var (
-	version = "0.1.0"
-)
-
-var (
 	git         = segments.NewGit()
 	host        = segments.Host{}
 	login       = segments.Login{}
@@ -31,7 +27,7 @@ func main() {
 	flag.Parse()
 
 	if *showVersion {
-		fmt.Println("Version:", version)
+		fmt.Println("Version:", Version)
 		os.Exit(0)
 	}
 
