@@ -1,11 +1,17 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
 
 	"github.com/erniebrodeur/goprompt/internal/builders"
 	"github.com/erniebrodeur/goprompt/internal/segments"
 	"github.com/mgutz/ansi"
+)
+
+var (
+	version = "0.1.0"
 )
 
 var (
@@ -19,6 +25,16 @@ var (
 )
 
 func main() {
+	showVersion := flag.Bool("v", false, "Show version")
+	flag.BoolVar(showVersion, "version", false, "Show version") // also support --version
+
+	flag.Parse()
+
+	if *showVersion {
+		fmt.Println("Version:", version)
+		os.Exit(0)
+	}
+
 	mid.Count = builders.TerminalWidth() -
 		git.Len() - pwd.Len() - host.Len() -
 		login.Len() - shell.Len() - currentTime.Len() - 17 // special + spaces
