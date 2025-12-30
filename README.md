@@ -7,7 +7,7 @@
 
 Install
 
-    go get github.com/erniebrodeur/goprompt/cmd/goprompt
+    go install github.com/erniebrodeur/goprompt/cmd/goprompt
 
 then
 

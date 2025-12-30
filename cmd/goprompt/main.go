@@ -22,12 +22,20 @@ var (
 
 func main() {
 	showVersion := flag.Bool("v", false, "Show version")
+	showStatus := flag.Bool("s", false, "Show segment status")
+
 	flag.BoolVar(showVersion, "version", false, "Show version") // also support --version
+	flag.BoolVar(showVersion, "status", false, "Show status")   // also support --status
 
 	flag.Parse()
 
 	if *showVersion {
 		fmt.Println("Version:", Version)
+		os.Exit(0)
+	}
+
+	if *showStatus {
+		status()
 		os.Exit(0)
 	}
 

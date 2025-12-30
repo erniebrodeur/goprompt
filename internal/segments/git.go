@@ -53,6 +53,11 @@ func (g *Git) parseGit() Git {
 		return *g
 	}
 
+	if strings.Contains(g.gitString, "## No commits yet on") {
+		g.branch = "No commits yet"
+		return *g
+	}
+
 	if strings.Contains(g.gitString, "HEAD (no branch)") {
 		g.branch = "HEAD (no branch)"
 		return *g
@@ -60,12 +65,6 @@ func (g *Git) parseGit() Git {
 
 	if !strings.Contains(g.gitString, "...") {
 		g.branch = strings.Split(g.gitString, "## ")[1]
-		return *g
-	}
-
-	if strings.Contains(g.gitString, "No commits yet") {
-		g.branch = "No commits yet"
-		fmt.Printf(("no commits yet"))
 		return *g
 	}
 
