@@ -3,4 +3,5 @@ vendor/
 vendor/
 *.coverprofile
 *.coverprofile
-goprompt
+/goprompt
+/CURRENT_WORK.md

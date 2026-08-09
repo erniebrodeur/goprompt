@@ -2,7 +2,6 @@ package segments
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/erniebrodeur/goprompt/internal/builders"
@@ -14,9 +13,6 @@ type Git struct {
 	branch, remoteBranch, direction, dirty, gitString string
 	gitBuilder                                        func() string
 }
-
-// var gitHeaderRegexp = regexp.MustCompile(`## (?P<local_branch>(\S*|HEAD \(no branch\)))(\.\.\.|$)(?P<remote_branch>\S*)(..(?P<direction>ahead|behind) (?P<direction_count>\d)]|)`)
-var gitHeaderRegexp = regexp.MustCompile(`## (\S*)(?:\.\.\.(\S*))( (?:\[(ahead|behind) (\d+))\]|)`)
 
 // NewGit returns an instantiated Git Struct
 func NewGit() *Git {
@@ -47,38 +43,46 @@ func (g *Git) Output() string {
 }
 
 func (g *Git) parseGit() Git {
+	g.branch = ""
+	g.remoteBranch = ""
+	g.direction = ""
+	g.dirty = ""
 	g.gitString = g.gitBuilder()
 
 	if g.gitString == "" {
 		return *g
 	}
 
-	if strings.Contains(g.gitString, "## No commits yet on") {
+	lines := strings.Split(strings.TrimRight(g.gitString, "\n"), "\n")
+	header := strings.TrimPrefix(lines[0], "## ")
+
+	if len(lines) > 1 {
+		g.dirty = "*"
+	}
+
+	if strings.HasPrefix(header, "No commits yet on ") {
 		g.branch = "No commits yet"
 		return *g
 	}
 
-	if strings.Contains(g.gitString, "HEAD (no branch)") {
+	if header == "HEAD (no branch)" {
 		g.branch = "HEAD (no branch)"
 		return *g
 	}
 
-	if !strings.Contains(g.gitString, "...") {
-		g.branch = strings.Split(g.gitString, "## ")[1]
+	separator := strings.Index(header, "...")
+	if separator == -1 {
+		g.branch = header
 		return *g
 	}
 
-	lines := strings.Split(g.gitString, "\n")
-
-	gitHeaderRegexp.MatchString(lines[0])
-	parts := gitHeaderRegexp.FindAllStringSubmatch(lines[0], -1)
-
-	g.branch = parts[0][1]
-	g.remoteBranch = parts[0][2]
-	g.direction = directionOutput(parts[0][3])
-
-	if len(lines) > 2 {
-		g.dirty = "*"
+	g.branch = header[:separator]
+	remoteStatus := header[separator+3:]
+	if statusSeparator := strings.IndexByte(remoteStatus, ' '); statusSeparator >= 0 {
+		g.remoteBranch = remoteStatus[:statusSeparator]
+		g.direction = directionOutput(remoteStatus[statusSeparator+1:])
+	} else {
+		g.remoteBranch = remoteStatus
 	}
 
 	return *g

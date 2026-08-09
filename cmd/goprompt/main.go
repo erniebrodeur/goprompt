@@ -21,20 +21,17 @@ var (
 )
 
 func main() {
-	showVersion := flag.Bool("v", false, "Show version")
-	showStatus := flag.Bool("s", false, "Show segment status")
+	showVersion, showStatus, err := parseOptions(os.Args[1:])
+	if err != nil {
+		os.Exit(2)
+	}
 
-	flag.BoolVar(showVersion, "version", false, "Show version") // also support --version
-	flag.BoolVar(showVersion, "status", false, "Show status")   // also support --status
-
-	flag.Parse()
-
-	if *showVersion {
+	if showVersion {
 		fmt.Println("Version:", Version)
 		os.Exit(0)
 	}
 
-	if *showStatus {
+	if showStatus {
 		status()
 		os.Exit(0)
 	}
@@ -44,6 +41,16 @@ func main() {
 		login.Len() - shell.Len() - currentTime.Len() - 17 // special + spaces
 
 	output()
+}
+
+func parseOptions(args []string) (showVersion, showStatus bool, err error) {
+	flags := flag.NewFlagSet("goprompt", flag.ContinueOnError)
+	flags.BoolVar(&showVersion, "v", false, "Show version")
+	flags.BoolVar(&showVersion, "version", false, "Show version")
+	flags.BoolVar(&showStatus, "s", false, "Show segment status")
+	flags.BoolVar(&showStatus, "status", false, "Show segment status")
+	err = flags.Parse(args)
+	return
 }
 
 func output() {
