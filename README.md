@@ -1,7 +1,6 @@
 # GoPrompt
 
 [![CodeFactor](https://www.codefactor.io/repository/github/erniebrodeur/goprompt/badge)](https://www.codefactor.io/repository/github/erniebrodeur/goprompt)
-[![Go Report Card](https://goreportcard.com/badge/github.com/erniebrodeur/goprompt)](https://goreportcard.com/report/github.com/erniebrodeur/goprompt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 GoPrompt is a compact, two-line prompt for Zsh. It shows the current directory, Git state, user, optional SSH host, and local time without giving up the full width of the terminal.
