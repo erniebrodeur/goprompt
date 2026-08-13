@@ -1,19 +1,10 @@
 package segments
 
-import (
-	"strings"
-
-	"github.com/mgutz/ansi"
-)
+import "strings"
 
 // Mid is for returning a variable size segment
 type Mid struct {
 	Count int
-}
-
-// ColoredOutput returns a color wrapped copy of Output
-func (m Mid) ColoredOutput() string {
-	return ansi.ColorFunc("blue+h")(m.Output())
 }
 
 // Len return length of string without invisible characters counted

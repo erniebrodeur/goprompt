@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/erniebrodeur/goprompt/internal/builders"
-	"github.com/mgutz/ansi"
 )
 
 // Git is for returning a specialized string representing the directories git status
@@ -19,11 +18,6 @@ func NewGit() *Git {
 	g := Git{}
 	g.gitBuilder = builders.Git
 	return &g
-}
-
-// ColoredOutput returns Output wrapped in a color
-func (g *Git) ColoredOutput() string {
-	return ansi.ColorFunc("yellow+h")(g.Output())
 }
 
 // Len return length of string without invisible characters counted
